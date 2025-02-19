@@ -1,0 +1,31 @@
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  when: on_success
+  only:
+    - main
+  image: docker:stable
+  services:
+    - docker:dind
+  script:
+    - docker login -u ssh -p $CI_TOKEN registry.gitlab.com 
+    - docker build -t registry.gitlab.com/hasha-medika/hasha-frontend .
+    - docker push registry.gitlab.com/hasha-medika/hasha-frontend
+
+deploy:
+  stage: deploy
+  tags: [deployaa]
+  script:
+    - docker login -u ssh -p $CI_TOKEN registry.gitlab.com 
+    - docker rm -f hasha-frontend || true
+    - docker rmi -f registry.gitlab.com/hasha-medika/hasha-frontend || true
+    - docker pull registry.gitlab.com/hasha-medika/hasha-frontend
+    # Create a temporary environment file
+    - echo -e "API_URL=https://api.hashamedika.com/" > env_file
+    # Run the Docker container with the temporary environment file
+    - docker run -d -p 3000:3000 --env-file env_file --name hasha-frontend registry.gitlab.com/hasha-medika/hasha-frontend
+    # Remove the temporary environment file
+    - rm env_file
