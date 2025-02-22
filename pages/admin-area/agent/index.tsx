@@ -10,6 +10,7 @@ import {
   Select,
   Space,
   Table,
+  Tag,
   Tooltip,
   Typography,
 } from "antd";
@@ -27,12 +28,13 @@ import WidgetUpload from "../../../src/components/WidgetUpload";
 import ModalDelete from "../../../src/components/ModalDelete";
 // import Link from "antd/es/typography/Link";
 
-const Product = () => {
+const Agent = () => {
   const initialState = {
     name: "",
-    description: "",
-    image: "",
-    category: "",
+    referral_code: "",
+    join_date: "",
+    status: "",
+    link: "",
   };
   const [formData, setFormData] = useState({
     modal: false,
@@ -42,25 +44,25 @@ const Product = () => {
   const [form] = Form.useForm();
   const datas = [
     {
-      image:
-        "https://res.cloudinary.com/dxjazxzn4/image/upload/v1740218449/jn3vfh2ewt56c4sookze.png",
-      name: "Beautiful Sunset",
-      category: "Transportation",
-      description: "A stunning sunset over the ocean.",
+      join_date: "1 Agustus 2023 ",
+      name: "Tatang Sutisna",
+      referral_code: "tatang1234",
+      status: "Non Active",
+      link: "https://iniaga.vercel.app/tata1234",
     },
     {
-      image:
-        "https://res-console.cloudinary.com/dxjazxzn4/thumbnails/v1/image/upload/v1740221979/aGRpc2lxZXl4ZXI5dmxrendiMmw=/drilldown",
-      name: "Mountain View",
-      category: "Transportation",
-      description: "A breathtaking view of the mountains.",
+      join_date: "1 Agustus 2023 ",
+      name: "Tatang Sutisna",
+      referral_code: "tatang1234",
+      status: "Active",
+      link: "https://iniaga.vercel.app/tata1234",
     },
     {
-      image:
-        "https://res.cloudinary.com/dxjazxzn4/image/upload/v1740218449/jn3vfh2ewt56c4sookze.png",
-      name: "City Lights",
-      category: "Transportation",
-      description: "A dazzling cityscape at night.",
+      join_date: "1 Agustus 2023 ",
+      name: "Tatang Sutisna",
+      referral_code: "tatang1234",
+      status: "Active",
+      link: "https://iniaga.vercel.app/tata1234",
     },
   ];
   const close = () => {
@@ -82,7 +84,7 @@ const Product = () => {
           (formData.modal && formData.action === "add") ||
           formData.action === "edit"
         }
-        title={`Form ${formData.action === "edit" ? "Edit" : "Add"} Product`}
+        title={`Form ${formData.action === "edit" ? "Edit" : "Add"} Agent`}
       >
         <Form
           onFinish={(e) => {
@@ -97,40 +99,26 @@ const Product = () => {
             <Input />
           </Form.Item>
           <Form.Item
-            label="Description"
-            name="description"
+            label="Referral Code"
+            name="referral_code"
             rules={[general.generalInput]}
           >
-            <Input.TextArea />
+            <Input />
           </Form.Item>
+
           <Form.Item
-            label="Category"
-            name="category"
+            label="Status"
+            name="status"
             rules={[general.generalInput]}
           >
             <Select
-              options={[{ label: "Transportation", value: "transportation" }]}
+              options={[
+                { label: "Active", value: "active" },
+                { label: "Non Active", value: "non active" },
+              ]}
             />
           </Form.Item>
-          <Form.Item label="Image" name="image" rules={[general.generalInput]}>
-            <WidgetUpload
-              onSuccess={(response) => {
-                form.setFieldValue("image", response.info.url);
-                setFormData({
-                  ...formData,
-                  payload: { ...formData.payload, image: response.info.url },
-                });
-              }}
-            />
-          </Form.Item>
-          {formData?.payload?.image !== "" && (
-            <>
-              <p className="text-sm text-neutral-500">Link preview:</p>
-              <Typography.Link target="_blank" href={formData?.payload?.image}>
-                {formData?.payload?.image}
-              </Typography.Link>
-            </>
-          )}
+
           <Space align="end" className="w-full justify-end">
             <Button
               type="default"
@@ -148,7 +136,7 @@ const Product = () => {
         </Form>
       </Modal>
       <Card
-        title={<h2 className="text-xl font-bold">Management Product</h2>}
+        title={<h2 className="text-xl font-bold">Management Agent</h2>}
         extra={
           <Button
             type="primary"
@@ -157,7 +145,7 @@ const Product = () => {
               setFormData({ ...formData, modal: true, action: "add" })
             }
           >
-            Add Product
+            Add Agent
           </Button>
         }
       >
@@ -169,46 +157,42 @@ const Product = () => {
               title: "Name",
               dataIndex: "name",
               key: "name",
+            },
+            {
+              title: "Referral Code",
+              dataIndex: "referral_code",
+              key: "referral_code",
+            },
+            {
+              title: "Join Date",
+              dataIndex: "join_date",
+              key: "join_date",
+            },
+            {
+              title: "Link",
+              dataIndex: "link",
+              key: "link",
               render: (text, record) => {
                 return (
-                  <Space>
-                    <Tooltip title="Click to view detail">
-                      <Avatar
-                        src={record.image}
-                        className="cursor-pointer"
-                        onClick={() => window.open(record.image, "_blank")}
-                      />
-                    </Tooltip>
-                    <Typography.Text>{text}</Typography.Text>
-                  </Space>
+                  <Typography.Link target="_blank" href={text}>
+                    {text}
+                  </Typography.Link>
                 );
               },
             },
             {
-              title: "Description",
-              dataIndex: "description",
-              key: "description",
-            },
-            {
-              title: "Category",
-              dataIndex: "category",
-              key: "category",
+              title: "Status",
+              dataIndex: "status",
+              key: "status",
+              render: (text, record) => {
+                return text === "Active" ? (
+                  <Tag color="green">{text}</Tag>
+                ) : (
+                  <Tag color="red">{text}</Tag>
+                );
+              },
             },
 
-            {
-              title: "Image",
-              dataIndex: "image",
-              key: "image",
-              render: (text, record) => {
-                return (
-                  <Tooltip title="Click to view detail">
-                    <Typography.Link target="_blank" href={text}>
-                      {text}
-                    </Typography.Link>
-                  </Tooltip>
-                );
-              },
-            },
             {
               fixed: "right",
               title: "#",
@@ -262,4 +246,4 @@ const Product = () => {
   );
 };
 
-export default Product;
+export default Agent;

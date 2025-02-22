@@ -19,6 +19,7 @@ import {
   Spin,
 } from "antd";
 import moment from "moment";
+import { CloseOutlined, DeleteOutlined } from "@ant-design/icons";
 
 const ModalDelete = ({ isModalDelete, isLoading, callback }) => {
   const [form] = Form.useForm();
@@ -31,20 +32,28 @@ const ModalDelete = ({ isModalDelete, isLoading, callback }) => {
         maskClosable={false}
         open={isModalDelete}
         onCancel={() => callback(false)}
-        title="Hapus Data"
+        title="Delete Data"
         footer={null}
       >
         <Spin spinning={isLoading}>
-          <h1>Anda yakin akan menghapus data ini ?</h1>
+          <h1>Are you sure you want to delete this data?</h1>
           <Divider />
-          <Row justify={"end"}>
-            <Button className="putih-button" onClick={() => callback(false)}>
-              Kembali
+          <Space align="end" className="w-full justify-end">
+            <Button
+              icon={<CloseOutlined />}
+              type="default"
+              onClick={() => callback(false)}
+            >
+              Cancel
             </Button>
-            <Button className="hijau-button" onClick={() => callback(true)}>
-              Hapus
+            <Button
+              icon={<DeleteOutlined />}
+              danger
+              onClick={() => callback(true)}
+            >
+              Delete
             </Button>
-          </Row>
+          </Space>
         </Spin>
       </Modal>
     )

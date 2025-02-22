@@ -33,7 +33,7 @@ import { deleteCookie, hasCookie } from "cookies-next";
 import { LOCALSTORAGE } from "../../src/contants/localstorage";
 import type { MenuProps } from "antd";
 
-const AdminLayout = ({children}) => {
+const AdminLayout = ({ children }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeMenu, setActiveMenu] = useState([]);
@@ -67,7 +67,7 @@ const AdminLayout = ({children}) => {
     {
       icon: <UserOutlined />,
       label: "Agent",
-      link: "Agent",
+      link: "agent",
     },
     {
       icon: <GlobalOutlined />,
@@ -243,10 +243,7 @@ const AdminLayout = ({children}) => {
             </Col>
             <Space align="end">
               <Dropdown menu={{ items }}>
-                <Avatar
-                  size={"large"}
-                  src={config.profile}
-                >
+                <Avatar size={"large"} src={config.profile}>
                   A
                 </Avatar>
               </Dropdown>
