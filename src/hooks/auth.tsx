@@ -28,7 +28,7 @@ export const useLogin = () => {
   let source = axios.CancelToken.source(); // Create a cancel token source
   const dummyUser = {
     _id: "65c6fe6a8172338e362ebfba",
-    email: "admin@hashamedika.com",
+    email: "admin@iniaga.com",
     fullname: "admin",
     status: "active",
     created_at: 1707540074,

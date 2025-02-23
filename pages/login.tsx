@@ -18,7 +18,7 @@ const Login: React.FC = () => {
   return (
     <div>
       <Head>
-        <title>Hasha Medika - Login</title>
+        <title>Iniaga - Login</title>
         <meta
           name="description"
           content="Encourage Parents, helping children"

@@ -563,6 +563,9 @@ textarea {
 /*
 Remove the inheritance of text transform in Edge and Firefox.
 */
+.ant-tabs-top > .ant-tabs-nav::before {
+  border-bottom: none !important;
+}
 
 button.my-btn-primary {
   background-color: #03151c !important;

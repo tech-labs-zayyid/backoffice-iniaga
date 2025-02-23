@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CldUploadWidget } from "next-cloudinary";
 import {
   Avatar,
@@ -25,7 +25,7 @@ import {
 import general from "../../../src/config/general";
 import WidgetUpload from "../../../src/components/WidgetUpload";
 import ModalDelete from "../../../src/components/ModalDelete";
-// import Link from "antd/es/typography/Link";
+import "antd/dist/reset.css"; // Pastikan Antd CSS di-import
 
 const Product = () => {
   const initialState = {
@@ -67,6 +67,22 @@ const Product = () => {
     form.resetFields();
     setFormData({ payload: initialState, modal: false, action: "" });
   };
+  const [editorData, setEditorData] = useState("");
+  const [editorValue, setEditorValue] = useState("");
+
+  useEffect(() => {
+    if (window.CKEDITOR) {
+      const editor = window.CKEDITOR.replace("description");
+      editor?.on("change", () => {
+        setEditorValue(editor.getData());
+        form.setFieldValue("description", editor.getData());
+      });
+      editor?.on("instanceReady", () => {
+        editor.setData("<p>Ini adalah teks default.</p>");
+      });
+    }
+  }, [formData.modal && formData.action !== "delete"]);
+
   return (
     <React.Fragment>
       <ModalDelete
@@ -75,6 +91,7 @@ const Product = () => {
         callback={close}
       />
       <Modal
+        width={"60vw"}
         maskClosable={false}
         footer={null}
         onCancel={close}
@@ -101,7 +118,7 @@ const Product = () => {
             name="description"
             rules={[general.generalInput]}
           >
-            <Input.TextArea />
+            <textarea id="description"></textarea>
           </Form.Item>
           <Form.Item
             label="Category"
@@ -125,13 +142,13 @@ const Product = () => {
           </Form.Item>
           {formData?.payload?.image !== "" && (
             <>
-              <p className="text-sm text-neutral-500">Link preview:</p>
+              <p className="text-sm text-neutral-500">Link preview image:</p>
               <Typography.Link target="_blank" href={formData?.payload?.image}>
                 {formData?.payload?.image}
               </Typography.Link>
             </>
           )}
-          <Space align="end" className="w-full justify-end">
+          <Space align="end" className="w-full justify-end mt-5">
             <Button
               type="default"
               htmlType="button"

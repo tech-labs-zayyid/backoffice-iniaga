@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { CldUploadWidget } from "next-cloudinary";
-import { Button, Card, Form, Input, Modal, Space, Typography } from "antd";
+import { Button, Card, Form, Input, Modal, Row, Space, Typography } from "antd";
 
 import {
   PlusCircleOutlined,
@@ -9,11 +9,11 @@ import {
   SaveOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
-import general from "../../../src/config/general";
-import WidgetUpload from "../../../src/components/WidgetUpload";
+import general from "../../../../src/config/general";
+import WidgetUpload from "../../../../src/components/WidgetUpload";
 // import Link from "antd/es/typography/Link";
 
-const Gallery = () => {
+const Banner = () => {
   const initialState = {
     title: "",
     description: "",
@@ -52,9 +52,7 @@ const Gallery = () => {
         footer={null}
         onCancel={close}
         open={formData.modal}
-        title={`Form ${
-          formData.action === "detail" ? "Detail" : "Add"
-        } Gallery`}
+        title={`Form ${formData.action === "detail" ? "Detail" : "Add"} Banner`}
       >
         <Form
           onFinish={(e) => {
@@ -65,14 +63,10 @@ const Gallery = () => {
           name="basic"
           autoComplete="off"
         >
-          <Form.Item label="Title" name="title" rules={[general.generalInput]}>
+          <Form.Item label="Title" name="title">
             <Input />
           </Form.Item>
-          <Form.Item
-            label="Description"
-            name="description"
-            rules={[general.generalInput]}
-          >
+          <Form.Item label="Description" name="description">
             <Input.TextArea />
           </Form.Item>
           <Form.Item label="Image" name="image" rules={[general.generalInput]}>
@@ -114,58 +108,56 @@ const Gallery = () => {
           </Space>
         </Form>
       </Modal>
-      <Card
-        title={<h2 className="text-xl font-bold">Management Gallery</h2>}
-        extra={
-          <Button
-            type="primary"
-            icon={<PlusCircleOutlined />}
-            onClick={() =>
-              setFormData({ ...formData, modal: true, action: "add" })
-            }
-          >
-            Add Gallery
-          </Button>
-        }
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {images.map((image, index) => (
-            <div
-              title="Click to view detail"
-              onClick={() => {
-                form.setFieldsValue({
+      <Row justify={"end"}>
+        <Button
+          type="primary"
+          icon={<PlusCircleOutlined />}
+          onClick={() =>
+            setFormData({ ...formData, modal: true, action: "add" })
+          }
+        >
+          Add Banner
+        </Button>
+      </Row>
+      <br />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {images.map((image, index) => (
+          <div
+            title="Click to view detail"
+            onClick={() => {
+              form.setFieldsValue({
+                title: image.title,
+                description: image.description,
+                image: image.src,
+              });
+              setFormData({
+                modal: true,
+                action: "detail",
+                payload: {
                   title: image.title,
                   description: image.description,
                   image: image.src,
-                });
-                setFormData({
-                  modal: true,
-                  action: "detail",
-                  payload: {
-                    title: image.title,
-                    description: image.description,
-                    image: image.src,
-                  },
-                });
-              }}
-              key={index}
-              className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer"
-            >
-              <img
-                src={image.src}
-                alt={image.title}
-                className="w-full h-56 transition-transform duration-300 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-white p-4">
-                <h3 className="text-lg font-bold">{image.title}</h3>
-                <p className="text-sm mt-1">{image.description}</p>
-              </div>
+                },
+              });
+            }}
+            key={index}
+            className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer"
+          >
+            <img
+              src={image.src}
+              alt={image.title}
+              className="w-full h-56 transition-transform duration-300 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-white p-4">
+              <h3 className="text-lg font-bold">{image.title}</h3>
+              <p className="text-sm mt-1">{image.description}</p>
             </div>
-          ))}
-        </div>
-      </Card>
+          </div>
+        ))}
+      </div>
     </React.Fragment>
   );
 };
 
-export default Gallery;
+export default Banner;
