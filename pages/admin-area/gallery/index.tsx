@@ -1,6 +1,14 @@
 import React, { useState } from "react";
-import { CldUploadWidget } from "next-cloudinary";
-import { Button, Card, Form, Input, Modal, Space, Typography } from "antd";
+import {
+  Button,
+  Card,
+  Form,
+  Input,
+  Modal,
+  Space,
+  Tooltip,
+  Typography,
+} from "antd";
 
 import {
   PlusCircleOutlined,
@@ -11,7 +19,8 @@ import {
 } from "@ant-design/icons";
 import general from "../../../src/config/general";
 import WidgetUpload from "../../../src/components/WidgetUpload";
-// import Link from "antd/es/typography/Link";
+import MansoryCard from "../../../src/components/MansoryCard";
+import ModalDelete from "../../../src/components/ModalDelete";
 
 const Gallery = () => {
   const initialState = {
@@ -25,30 +34,21 @@ const Gallery = () => {
     payload: initialState,
   });
   const [form] = Form.useForm();
-  const images = [
-    {
-      src: "https://res.cloudinary.com/dxjazxzn4/image/upload/v1740218449/jn3vfh2ewt56c4sookze.png",
-      title: "Beautiful Sunset",
-      description: "A stunning sunset over the ocean.",
-    },
-    {
-      src: "https://res-console.cloudinary.com/dxjazxzn4/thumbnails/v1/image/upload/v1740221979/aGRpc2lxZXl4ZXI5dmxrendiMmw=/drilldown",
-      title: "Mountain View",
-      description: "A breathtaking view of the mountains.",
-    },
-    {
-      src: "https://res.cloudinary.com/dxjazxzn4/image/upload/v1740218449/jn3vfh2ewt56c4sookze.png",
-      title: "City Lights",
-      description: "A dazzling cityscape at night.",
-    },
-  ];
   const close = () => {
     form.resetFields();
     setFormData({ payload: initialState, modal: false, action: "" });
   };
   return (
     <React.Fragment>
+      <ModalDelete
+        isModalDelete={formData.modal && formData.action === "delete"}
+        isLoading={false}
+        callback={() => {
+          setFormData({ ...formData, modal: true, action: "detail" });
+        }}
+      />
       <Modal
+        centered
         footer={null}
         onCancel={close}
         open={formData.modal}
@@ -84,16 +84,10 @@ const Gallery = () => {
                   payload: { ...formData.payload, image: response.info.url },
                 });
               }}
+              link={formData?.payload?.image}
             />
           </Form.Item>
-          {formData?.payload?.image !== "" && (
-            <>
-              <p className="text-sm text-neutral-500">Link preview:</p>
-              <Typography.Link target="_blank" href={formData?.payload?.image}>
-                {formData?.payload?.image}
-              </Typography.Link>
-            </>
-          )}
+
           <Space align="end" className="w-full justify-end">
             <Button
               type="default"
@@ -104,7 +98,14 @@ const Gallery = () => {
               Cancel
             </Button>
             {formData.action === "detail" && (
-              <Button danger htmlType="button" icon={<DeleteOutlined />}>
+              <Button
+                danger
+                htmlType="button"
+                icon={<DeleteOutlined />}
+                onClick={() => {
+                  setFormData({ ...formData, action: "delete" });
+                }}
+              >
                 Delete
               </Button>
             )}
@@ -128,41 +129,17 @@ const Gallery = () => {
           </Button>
         }
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {images.map((image, index) => (
-            <div
-              title="Click to view detail"
-              onClick={() => {
-                form.setFieldsValue({
-                  title: image.title,
-                  description: image.description,
-                  image: image.src,
-                });
-                setFormData({
-                  modal: true,
-                  action: "detail",
-                  payload: {
-                    title: image.title,
-                    description: image.description,
-                    image: image.src,
-                  },
-                });
-              }}
-              key={index}
-              className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer"
-            >
-              <img
-                src={image.src}
-                alt={image.title}
-                className="w-full h-56 transition-transform duration-300 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-white p-4">
-                <h3 className="text-lg font-bold">{image.title}</h3>
-                <p className="text-sm mt-1">{image.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <MansoryCard
+          data={general.cloudinaryImage}
+          callback={(record) => {
+            form.setFieldsValue(record);
+            setFormData({
+              modal: true,
+              action: "detail",
+              payload: record,
+            });
+          }}
+        />
       </Card>
     </React.Fragment>
   );

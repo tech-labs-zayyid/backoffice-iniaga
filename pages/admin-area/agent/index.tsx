@@ -35,6 +35,7 @@ const Agent = () => {
     join_date: "",
     status: "",
     link: "",
+    image: "",
   };
   const [formData, setFormData] = useState({
     modal: false,
@@ -44,6 +45,8 @@ const Agent = () => {
   const [form] = Form.useForm();
   const datas = [
     {
+      image:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtuphMb4mq-EcVWhMVT8FCkv5dqZGgvn_QiA&s",
       join_date: "1 Agustus 2023 ",
       name: "Tatang Sutisna",
       referral_code: "tatang1234",
@@ -51,6 +54,9 @@ const Agent = () => {
       link: "https://iniaga.vercel.app/tata1234",
     },
     {
+      image:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtuphMb4mq-EcVWhMVT8FCkv5dqZGgvn_QiA&s",
+
       join_date: "1 Agustus 2023 ",
       name: "Tatang Sutisna",
       referral_code: "tatang1234",
@@ -58,6 +64,9 @@ const Agent = () => {
       link: "https://iniaga.vercel.app/tata1234",
     },
     {
+      image:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtuphMb4mq-EcVWhMVT8FCkv5dqZGgvn_QiA&s",
+
       join_date: "1 Agustus 2023 ",
       name: "Tatang Sutisna",
       referral_code: "tatang1234",
@@ -118,6 +127,18 @@ const Agent = () => {
               ]}
             />
           </Form.Item>
+          <Form.Item label="Image" name="image" rules={[general.generalInput]}>
+            <WidgetUpload
+              onSuccess={(response) => {
+                form.setFieldValue("image", response.info.url);
+                setFormData({
+                  ...formData,
+                  payload: { ...formData.payload, image: response.info.url },
+                });
+              }}
+              link={formData?.payload?.image}
+            />
+          </Form.Item>
 
           <Space align="end" className="w-full justify-end">
             <Button
@@ -150,6 +171,7 @@ const Agent = () => {
         }
       >
         <Table
+          bordered={false}
           dataSource={datas}
           scroll={{ x: "max-content" }}
           columns={[
@@ -157,6 +179,13 @@ const Agent = () => {
               title: "Name",
               dataIndex: "name",
               key: "name",
+              render: (text, record) => {
+                return (
+                  <Space>
+                    <Avatar src={record.image} /> {text}
+                  </Space>
+                );
+              },
             },
             {
               title: "Referral Code",
@@ -173,11 +202,7 @@ const Agent = () => {
               dataIndex: "link",
               key: "link",
               render: (text, record) => {
-                return (
-                  <Typography.Link target="_blank" href={text}>
-                    {text}
-                  </Typography.Link>
-                );
+                return <Typography.Text copyable>{text}</Typography.Text>;
               },
             },
             {
@@ -205,8 +230,8 @@ const Agent = () => {
                       onClick={() => {
                         form.setFieldsValue({
                           name: record.name,
-                          description: record.description,
-                          category: record.category,
+                          referral_code: record.referral_code,
+                          status: record.status,
                           image: record.image,
                         });
                         setFormData({

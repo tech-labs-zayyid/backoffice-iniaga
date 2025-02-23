@@ -1,5 +1,5 @@
-import { Card, Row, Space, Tabs, Typography } from "antd";
-import React from "react";
+import { Card,Col, Row, Space, Tabs, Typography } from "antd";
+import React, { useEffect, useState } from "react";
 import Navbar from "./Tabs/Nabvar";
 import Banner from "./Tabs/Banner";
 import Profile from "./Tabs/Profile";
@@ -11,8 +11,15 @@ import Icon, {
   StarOutlined,
   NumberOutlined,
   ExpandOutlined,
+  LinkOutlined,
 } from "@ant-design/icons";
+import SocialMedia from "./Tabs/SocialMedia";
+import { useRouter } from "next/router";
+
 const Content = () => {
+  const router = useRouter();
+  const { query } = router;
+  const tabComponent = [<Navbar />, <Banner />, <Profile />, <Testimoni />, <Footer />, <SocialMedia />];
   const nav = [
     {
       label: "Navbar",
@@ -39,28 +46,52 @@ const Content = () => {
       key: 4,
       icon: <NumberOutlined />,
     },
+    {
+      label: "Social Media",
+      key: 5,
+      icon: <LinkOutlined />,
+    },
   ];
-  const [activeTab, setActiveTab] = React.useState(0);
+  const [activeTab, setActiveTab] = useState(query.tab || "");
+  useEffect(() => {
+    if (query.tab) {
+      setActiveTab(query.tab as string);
+    }
+  }, [query.tab]);
+
+  const handleTabChange = (key: string) => {
+    setActiveTab(key);
+    router.push(
+      {
+        pathname: router.pathname,
+        query: { ...query, tab: key }, // Tambahkan query string tab
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
   return (
     <React.Fragment>
-      <Card
-        title={<h2 className="text-xl font-bold">Management Content</h2>}
-        extra={
-          <Tabs
-            activeKey={activeTab as any}
-            onTabClick={(e) => {
-              setActiveTab(Number(e));
-            }}
-            items={nav as any}
-          />
-        }
-      >
-        {activeTab === 0 && <Navbar />}
-        {activeTab === 1 && <Banner />}
-        {activeTab === 2 && <Profile />}
-        {activeTab === 3 && <Testimoni />}
-        {activeTab === 4 && <Footer />}
-      </Card>
+      <Row>
+        <Col md={24}>
+          <Card
+            title={<h2 className="text-xl font-bold">Management Content</h2>}
+            extra={
+              <Row>
+                <Col md={24}>
+                  <Tabs
+                    activeKey={Number(activeTab) as any}
+                    onTabClick={handleTabChange}
+                    items={nav as any}
+                  />
+                </Col>
+              </Row>
+            }
+          >
+            {tabComponent[Number(activeTab)]}
+          </Card>
+        </Col>
+      </Row>
     </React.Fragment>
   );
 };

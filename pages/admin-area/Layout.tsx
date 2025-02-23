@@ -9,6 +9,7 @@ import {
   GlobalOutlined,
   ProductOutlined,
   FileImageOutlined,
+  ShareAltOutlined,
 } from "@ant-design/icons";
 import {
   Layout,
@@ -72,7 +73,7 @@ const AdminLayout = ({ children }) => {
     {
       icon: <GlobalOutlined />,
       label: "Content",
-      link: "content",
+      link: "content?tab=0",
     },
   ];
 
@@ -80,8 +81,9 @@ const AdminLayout = ({ children }) => {
     if (!hasCookie("token")) {
       router.push("/login");
     }
-    let newActiveMenu = menuSidebar.findIndex(
-      (v) => v.link === router.pathname.split("/")[2]
+    console.log(router.pathname.split('/')[2]);
+    let newActiveMenu = menuSidebar.findIndex((v) =>
+      v.link.includes(router.pathname.split("/")[2])
     );
 
     setActiveMenu([`${newActiveMenu}`]);
@@ -99,6 +101,7 @@ const AdminLayout = ({ children }) => {
         </Space>
       ),
     },
+   
     {
       key: "2",
       label: (
@@ -116,6 +119,7 @@ const AdminLayout = ({ children }) => {
       },
     },
   ];
+  console.log(activeMenu)
   return (
     <Layout style={{ minHeight: "100vh" }}>
       {!collapsed && (

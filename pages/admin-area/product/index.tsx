@@ -91,6 +91,7 @@ const Product = () => {
         callback={close}
       />
       <Modal
+        centered
         width={"60vw"}
         maskClosable={false}
         footer={null}
@@ -138,16 +139,10 @@ const Product = () => {
                   payload: { ...formData.payload, image: response.info.url },
                 });
               }}
+              link={formData?.payload?.image}
             />
           </Form.Item>
-          {formData?.payload?.image !== "" && (
-            <>
-              <p className="text-sm text-neutral-500">Link preview image:</p>
-              <Typography.Link target="_blank" href={formData?.payload?.image}>
-                {formData?.payload?.image}
-              </Typography.Link>
-            </>
-          )}
+
           <Space align="end" className="w-full justify-end mt-5">
             <Button
               type="default"

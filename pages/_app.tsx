@@ -1,7 +1,6 @@
 import { AppProps } from "next/app";
 import "../global/global.css";
 import Head from "next/head";
-import { Toaster } from "react-hot-toast";
 import NProgress from "nprogress";
 import Router from "next/router";
 import "nprogress/nprogress.css"; //styles of nprogress
@@ -46,7 +45,7 @@ function MyApp({ Component, pageProps, router }: AppProps) {
         <title>{path?.[2] || path?.[1]}</title>
         <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
       </Head>
-      <Toaster position="top-right" />
+    
       {isPageLogin ? (
         <Component {...pageProps} />
       ) : (

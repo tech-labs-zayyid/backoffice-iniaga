@@ -28,7 +28,7 @@ const ModalDelete = ({ isModalDelete, isLoading, callback }) => {
 
   return (
     isModalDelete && (
-      <Modal
+      <Modal centered
         maskClosable={false}
         open={isModalDelete}
         onCancel={() => callback(false)}

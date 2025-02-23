@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useLogin } from "../../hooks/auth";
-import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import { ErrorResponse } from "../../contants/error";
 import { setCookie } from "cookies-next";
 import router from "next/router";
 import config from "../../config/config";
 import { LOCALSTORAGE } from "../../contants/localstorage";
-import { Form, Input, Row, Button as ButtonAntd, Spin, Col, Modal } from "antd";
+import { Form, Input, Row, Button as ButtonAntd, Spin, Col, Modal,message } from "antd";
 import general from "../../config/general";
 const Login = () => {
   // const [email, setEmail] = useState("");
@@ -25,7 +24,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     fetchUser(form.getFieldsValue(), (err: AxiosError) => {
       const errorData = err.response.data as ErrorResponse;
-      toast.error(errorData.message);
+      message.error(errorData.message);
       return;
     });
   };
@@ -34,7 +33,7 @@ const Login = () => {
     if (user !== null) {
       setCookie("token", user.token, { maxAge: 60 * 6 * 24 * 7 });
       localStorage.setItem("role", "admin");
-      router.push("/");
+      router.push("/dashboard");
     }
   }, [user]);
 

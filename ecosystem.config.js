@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "hasha-frontend",
+      name: "iniaga-backoffice",
       script: "node_modules/.bin/next",
       args: "start",
       instances: "max",
