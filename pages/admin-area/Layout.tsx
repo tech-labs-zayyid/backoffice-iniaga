@@ -77,7 +77,7 @@ const AdminLayout = ({ children }) => {
     {
       icon: <GlobalOutlined />,
       label: "Content",
-      link: `content?tab=${activeTab}`,
+      link: `content?tab=0`,
     },
   ];
 
