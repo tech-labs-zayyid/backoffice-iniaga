@@ -57,7 +57,6 @@ const Banner = () => {
       >
         <Form
           onFinish={(e) => {
-            console.log(e);
           }}
           form={form}
           layout="vertical"

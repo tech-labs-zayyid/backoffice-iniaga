@@ -3,6 +3,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  
   swcMinify: true, // Pastikan ini aktif untuk minify lebih cepat
 
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {

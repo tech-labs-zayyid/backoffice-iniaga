@@ -33,11 +33,15 @@ import UAParser from "ua-parser-js";
 import { deleteCookie, hasCookie } from "cookies-next";
 import { LOCALSTORAGE } from "../../src/contants/localstorage";
 import type { MenuProps } from "antd";
+import useContent from "./content/store/store";
 
 const AdminLayout = ({ children }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeMenu, setActiveMenu] = useState([]);
+
+  const {activeTab}=useContent()
+
   useEffect(() => {
     const parser = new UAParser();
     const result = parser.getResult();
@@ -73,7 +77,7 @@ const AdminLayout = ({ children }) => {
     {
       icon: <GlobalOutlined />,
       label: "Content",
-      link: "content?tab=0",
+      link: `content?tab=${activeTab}`,
     },
   ];
 
@@ -81,7 +85,6 @@ const AdminLayout = ({ children }) => {
     if (!hasCookie("token")) {
       router.push("/login");
     }
-    console.log(router.pathname.split('/')[2]);
     let newActiveMenu = menuSidebar.findIndex((v) =>
       v.link.includes(router.pathname.split("/")[2])
     );
@@ -119,7 +122,6 @@ const AdminLayout = ({ children }) => {
       },
     },
   ];
-  console.log(activeMenu)
   return (
     <Layout style={{ minHeight: "100vh" }}>
       {!collapsed && (
@@ -247,7 +249,7 @@ const AdminLayout = ({ children }) => {
             </Col>
             <Space align="end">
               <Dropdown menu={{ items }}>
-                <Avatar size={"large"} src={config.profile}>
+                <Avatar size={"large"}  icon={<UserOutlined/>}>
                   A
                 </Avatar>
               </Dropdown>

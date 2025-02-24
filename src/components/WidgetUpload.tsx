@@ -1,16 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CldUploadWidget } from "next-cloudinary";
-import { Space, Typography } from "antd";
+import { Col, Row, Space, Typography } from "antd";
 
 import { CloudUploadOutlined } from "@ant-design/icons";
-const WidgetUpload = ({ onSuccess, link = "" }) => {
+const WidgetUpload = ({ onSuccess, link = "", maxFiles = 1 }) => {
+  const [files, setFiles] = useState([link]);
+
+  useEffect(() => {
+    if(maxFiles>1){
+    setFiles([...files, link]);
+
+    }else{
+      setFiles([link])
+    }
+  }, [onSuccess]);
+
+
   return (
     <React.Fragment>
       <CldUploadWidget
         onSuccess={onSuccess}
         uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_PRESET}
         options={{
-          maxFiles: 1,
+          maxFiles,
         }}
       >
         {({ open }) => {
@@ -49,9 +61,19 @@ const WidgetUpload = ({ onSuccess, link = "" }) => {
       {link !== "" && (
         <>
           <p className="text-sm text-neutral-500 mt-5">Link preview image:</p>
-          <Typography.Link target="_blank" href={link}>
-            {link}
-          </Typography.Link>
+          <Row>
+            {files
+              .filter((v) => v !== "")
+              .map((v, index) => {
+                return (
+                  <Col md={24}>
+                    <Typography.Link key={index} target="_blank" href={v}>
+                      {v}
+                    </Typography.Link>
+                  </Col>
+                );
+              })}
+          </Row>
         </>
       )}
     </React.Fragment>

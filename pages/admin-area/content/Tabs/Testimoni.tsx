@@ -79,7 +79,6 @@ const Testimonu = () => {
       >
         <Form
           onFinish={(e) => {
-            console.log(e);
           }}
           form={form}
           layout="vertical"

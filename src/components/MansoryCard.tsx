@@ -1,5 +1,25 @@
 import { Tooltip } from "antd";
+import { useEffect, useState } from "react";
+
 const MansoryCard = ({ data, callback }) => {
+  const [cachedImages, setCachedImages] = useState({});
+
+  useEffect(() => {
+    const preloadImages = () => {
+      data.forEach((image) => {
+        const img = new Image();
+        img.src = image.image;
+        img.onload = () => {
+          setCachedImages((prev) => ({
+            ...prev,
+            [image.image]: image.image,
+          }));
+        };
+      });
+    };
+    preloadImages();
+  }, [data]);
+
   return (
     <div className="columns-1 sm:columns-2 md:columns-3 gap-4 space-y-4">
       {data.map((image, index) => (
@@ -11,7 +31,7 @@ const MansoryCard = ({ data, callback }) => {
             className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer break-inside-avoid"
           >
             <img
-              src={image.image}
+              src={cachedImages[image.image] || image.image}
               alt={image.title}
               className="w-full h-auto transition-transform duration-300 group-hover:scale-105 rounded-lg"
             />
@@ -25,4 +45,5 @@ const MansoryCard = ({ data, callback }) => {
     </div>
   );
 };
+
 export default MansoryCard;

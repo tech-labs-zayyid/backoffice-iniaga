@@ -43,7 +43,6 @@ const path = router.pathname.split("/") || "";
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href={config.favicon} />
         <title>{path?.[2] || path?.[1]}</title>
-        {/* <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script> */}
       </Head>
     
       {isPageLogin ? (
@@ -53,6 +52,7 @@ const path = router.pathname.split("/") || "";
           <Component {...pageProps} />
         </AdminLayout>
       )}
+      
     </div>
   );
 }

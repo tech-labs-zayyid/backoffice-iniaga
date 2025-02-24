@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { CldUploadWidget } from "next-cloudinary";
 import {
   Avatar,
@@ -43,21 +43,21 @@ const Product = () => {
   const datas = [
     {
       image:
-        "https://res.cloudinary.com/dxjazxzn4/image/upload/v1740218449/jn3vfh2ewt56c4sookze.png",
+        "https://res.cloudinary.com/dxjazxzn4/image/upload/v1740324535/ioxuf0ayjb9izrtsa6l1.jpg",
       name: "Beautiful Sunset",
       category: "Transportation",
       description: "A stunning sunset over the ocean.",
     },
     {
       image:
-        "https://res-console.cloudinary.com/dxjazxzn4/thumbnails/v1/image/upload/v1740221979/aGRpc2lxZXl4ZXI5dmxrendiMmw=/drilldown",
+        "https://res.cloudinary.com/dxjazxzn4/image/upload/v1740324507/qugbfsf7b5nzrjyucjor.jpg",
       name: "Mountain View",
       category: "Transportation",
       description: "A breathtaking view of the mountains.",
     },
     {
       image:
-        "https://res.cloudinary.com/dxjazxzn4/image/upload/v1740218449/jn3vfh2ewt56c4sookze.png",
+        "https://res.cloudinary.com/dxjazxzn4/image/upload/v1740324459/zm40pjf9pkkcoerjyiex.jpg",
       name: "City Lights",
       category: "Transportation",
       description: "A dazzling cityscape at night.",
@@ -68,28 +68,35 @@ const Product = () => {
     setFormData({ payload: initialState, modal: false, action: "" });
   };
   const [editorData, setEditorData] = useState("");
-  const [editorValue, setEditorValue] = useState(
-    "<p>Ini adalah teks default.</p>"
-  );
-  // useEffect(() => {
-  //   if (typeof window === "undefined") return; // Hindari error saat build
 
-  //   const checkEditor = setTimeout(() => {
-  //     if (window.CKEDITOR) {
-  //       const editor = window.CKEDITOR.replace("description");
-  //       editor?.on("change", () => {
-  //         setEditorValue(editor.getData());
-  //         form.setFieldValue("description", editor.getData());
-  //       });
-  //       editor?.on("instanceReady", () => {
-  //         editor.setData("<p>Ini adalah teks default.</p>");
-  //       });
-  //     }
-  //   }, 500);
+  useEffect(() => {
+    // Gunakan setTimeout untuk memastikan data terbaru diambil setelah state selesai diperbarui
+    const timeout = setTimeout(() => {
+      setEditorData(formData.payload.description || "");
+    }, 100); // Delay 100ms untuk memastikan nilai benar
 
-  //   return () => clearTimeout(checkEditor);
-  // }, [formData.modal, formData.action]);
+    return () => clearTimeout(timeout); // Bersihkan timeout untuk mencegah memory leak
+  }, [formData.payload.description]);
 
+  const ckeditor = useMemo(() => {
+    console.log("render ckeditor", editorData);
+
+    return (
+      <CKEditor
+        initData={editorData}
+        data={editorData} // Pastikan CKEditor selalu mengikuti state editorData
+        onChange={(event) => {
+          const data = event.editor.getData();
+          setEditorData(data);
+          setFormData({
+            ...formData,
+            payload: { ...formData.payload, description: data },
+          });
+          form.setFieldValue("description", data);
+        }}
+      />
+    );
+  }, [editorData]);
   return (
     <React.Fragment>
       <ModalDelete
@@ -105,14 +112,12 @@ const Product = () => {
         onCancel={close}
         open={
           (formData.modal && formData.action === "add") ||
-          formData.action === "edit"
+          formData.action === "detail"
         }
         title={`Form ${formData.action === "edit" ? "Edit" : "Add"} Product`}
       >
         <Form
-          onFinish={(e) => {
-            console.log(e);
-          }}
+          onFinish={(e) => {}}
           form={form}
           layout="vertical"
           name="basic"
@@ -127,14 +132,19 @@ const Product = () => {
             rules={[general.generalInput]}
           >
             <CKEditor
-              initData={editorValue} // Set default value
+              initData={editorData}
               onChange={(event) => {
                 const data = event.editor.getData();
-                setEditorValue(data);
+                setEditorData(data);
+                setFormData({
+                  ...formData,
+                  payload: { ...formData.payload, description: data },
+                });
                 form.setFieldValue("description", data);
               }}
             />
           </Form.Item>
+
           <Form.Item
             label="Category"
             name="category"
@@ -146,6 +156,7 @@ const Product = () => {
           </Form.Item>
           <Form.Item label="Image" name="image" rules={[general.generalInput]}>
             <WidgetUpload
+              maxFiles={3}
               onSuccess={(response) => {
                 form.setFieldValue("image", response.info.url);
                 setFormData({
@@ -187,102 +198,68 @@ const Product = () => {
           </Button>
         }
       >
-        <Table
-          dataSource={datas}
-          scroll={{ x: "max-content" }}
-          columns={[
-            {
-              title: "Name",
-              dataIndex: "name",
-              key: "name",
-              render: (text, record) => {
-                return (
-                  <Space>
-                    <Tooltip title="Click to view detail">
-                      <Avatar
-                        src={record.image}
-                        className="cursor-pointer"
-                        onClick={() => window.open(record.image, "_blank")}
-                      />
-                    </Tooltip>
-                    <Typography.Text>{text}</Typography.Text>
-                  </Space>
-                );
-              },
-            },
-            {
-              title: "Description",
-              dataIndex: "description",
-              key: "description",
-            },
-            {
-              title: "Category",
-              dataIndex: "category",
-              key: "category",
-            },
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4">
+          {datas.map((item, index) => (
+            <div
+              key={index}
+              className="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105"
+            >
+              {/* Gambar */}
+              <div className="relative">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full h-56 object-cover"
+                />
+                <span className="absolute top-3 left-3 bg-[#FF5733] text-white text-xs font-semibold px-3 py-1 rounded-full">
+                  {item.category}
+                </span>
+              </div>
 
-            {
-              title: "Image",
-              dataIndex: "image",
-              key: "image",
-              render: (text, record) => {
-                return (
-                  <Tooltip title="Click to view detail">
-                    <Typography.Link target="_blank" href={text}>
-                      {text}
-                    </Typography.Link>
-                  </Tooltip>
-                );
-              },
-            },
-            {
-              fixed: "right",
-              title: "#",
-              dataIndex: "image",
-              key: "image",
-              render: (text, record) => {
-                return (
-                  <Space>
-                    <Button
-                      onClick={() => {
-                        form.setFieldsValue({
-                          name: record.name,
-                          description: record.description,
-                          category: record.category,
-                          image: record.image,
-                        });
-                        setFormData({
-                          ...formData,
-                          modal: true,
-                          action: "edit",
-                          payload: record,
-                        });
-                      }}
-                      type="primary"
-                      icon={<EditOutlined />}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      danger
-                      icon={<DeleteOutlined />}
-                      onClick={() => {
-                        setFormData({
-                          ...formData,
-                          modal: true,
-                          action: "delete",
-                          payload: record,
-                        });
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </Space>
-                );
-              },
-            },
-          ]}
-        />
+              {/* Konten */}
+              <div className="p-4">
+                <h3 className="text-lg font-bold text-gray-800">{item.name}</h3>
+                <p className="text-sm text-gray-600 mt-2">{item.description}</p>
+              </div>
+
+              {/* Tombol */}
+              <div className="p-4 border-t flex gap-2">
+                <Button
+                  type="primary"
+                  icon={<EditOutlined />}
+                  onClick={() => {
+                    form.setFieldsValue(item);
+                    setEditorData(item.description);
+                    setFormData({
+                      ...formData,
+                      modal: true,
+                      action: "detail",
+                      payload: item,
+                    });
+                  }}
+                  className="w-full"
+                >
+                  View Details
+                </Button>
+                <Button
+                  icon={<DeleteOutlined />}
+                  danger
+                  className="w-full"
+                  onClick={() => {
+                    setFormData({
+                      ...formData,
+                      modal: true,
+                      action: "detail",
+                      payload: item,
+                    });
+                  }}
+                >
+                  Delete
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
       </Card>
     </React.Fragment>
   );
