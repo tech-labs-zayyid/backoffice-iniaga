@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import config from "../config/config";
 import router from "next/router";
 import { LOCALSTORAGE } from "../contants/localstorage";
-import { message } from "antd";
 import { METHODS, call } from "./baseApi";
 
 interface LoginRequest {
