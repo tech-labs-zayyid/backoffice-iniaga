@@ -130,7 +130,7 @@ export const useRegister = (): UseRegisterResult => {
 
       if (res.status === 200) {
         setUser(res.data.data);
-        localStorage.setItem(LOCALSTORAGE.EMAIL_REGISTER, data.email);
+        // localStorage.setItem(LOCALSTORAGE.EMAIL_REGISTER, data.email);
         router.push("/confirm-register");
       }
     } catch (error) {
@@ -177,7 +177,7 @@ export const useConfirmRegister = () => {
       if (res.status === 200) {
         setIsSuccess(true);
         setIsLoading(false);
-        localStorage.removeItem(LOCALSTORAGE.EMAIL_REGISTER);
+        // localStorage.removeItem(LOCALSTORAGE.EMAIL_REGISTER);
       }
     } catch (error) {
       console.error("Error during register:", error);

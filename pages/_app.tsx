@@ -31,7 +31,7 @@ function MyApp({ Component, pageProps, router }: AppProps) {
       deviceType === "mobile" ? "1" : "0"
     );
   }, []);
-  const path = Router?.router?.state?.pathname?.split("/") || "";
+const path = router.pathname.split("/") || "";
   const isPageLogin = router.pathname.startsWith("/login");
 
   return (
@@ -43,7 +43,7 @@ function MyApp({ Component, pageProps, router }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href={config.favicon} />
         <title>{path?.[2] || path?.[1]}</title>
-        <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+        {/* <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script> */}
       </Head>
     
       {isPageLogin ? (

@@ -25,7 +25,7 @@ import {
 import general from "../../../src/config/general";
 import WidgetUpload from "../../../src/components/WidgetUpload";
 import ModalDelete from "../../../src/components/ModalDelete";
-import "antd/dist/reset.css"; // Pastikan Antd CSS di-import
+import { CKEditor } from "ckeditor4-react";
 
 const Product = () => {
   const initialState = {
@@ -68,20 +68,27 @@ const Product = () => {
     setFormData({ payload: initialState, modal: false, action: "" });
   };
   const [editorData, setEditorData] = useState("");
-  const [editorValue, setEditorValue] = useState("");
+  const [editorValue, setEditorValue] = useState(
+    "<p>Ini adalah teks default.</p>"
+  );
+  // useEffect(() => {
+  //   if (typeof window === "undefined") return; // Hindari error saat build
 
-  useEffect(() => {
-    if (window.CKEDITOR) {
-      const editor = window.CKEDITOR.replace("description");
-      editor?.on("change", () => {
-        setEditorValue(editor.getData());
-        form.setFieldValue("description", editor.getData());
-      });
-      editor?.on("instanceReady", () => {
-        editor.setData("<p>Ini adalah teks default.</p>");
-      });
-    }
-  }, [formData.modal && formData.action !== "delete"]);
+  //   const checkEditor = setTimeout(() => {
+  //     if (window.CKEDITOR) {
+  //       const editor = window.CKEDITOR.replace("description");
+  //       editor?.on("change", () => {
+  //         setEditorValue(editor.getData());
+  //         form.setFieldValue("description", editor.getData());
+  //       });
+  //       editor?.on("instanceReady", () => {
+  //         editor.setData("<p>Ini adalah teks default.</p>");
+  //       });
+  //     }
+  //   }, 500);
+
+  //   return () => clearTimeout(checkEditor);
+  // }, [formData.modal, formData.action]);
 
   return (
     <React.Fragment>
@@ -119,7 +126,14 @@ const Product = () => {
             name="description"
             rules={[general.generalInput]}
           >
-            <textarea id="description"></textarea>
+            <CKEditor
+              initData={editorValue} // Set default value
+              onChange={(event) => {
+                const data = event.editor.getData();
+                setEditorValue(data);
+                form.setFieldValue("description", data);
+              }}
+            />
           </Form.Item>
           <Form.Item
             label="Category"

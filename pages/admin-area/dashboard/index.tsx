@@ -47,7 +47,7 @@ const AgentsChart = () => {
     responsive: true,
     plugins: {
       legend: {
-        position: "top",
+        position: "top" as const,
         labels: {
           font: {
             family: "Inter, sans-serif", // Gunakan font Inter
@@ -126,7 +126,7 @@ const Sales = () => {
       responsive: true,
       plugins: {
         legend: {
-          position: "top",
+          position: "top" as const,
           labels: {
             font: {
               family: "Inter, sans-serif",
