@@ -38,6 +38,24 @@
     var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 
 }
+.cke_chrome {
+    display: block;
+    border: 1px solid #d1d1d1;
+    padding: 0;
+    border-radius: 6px !important;
+}
+.cke_top{
+      border-radius: 6px !important;
+          /* border: 1px solid #d1d1d1 !important; */
+
+
+}
+.cke_inner, .cke_bottom{
+  background-color: transparent !important;
+}
+.ant-tag{
+  font-weight: 600 !important;
+}
 .db{
   display: none !important;
 }

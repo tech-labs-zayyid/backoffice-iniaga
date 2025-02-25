@@ -5,12 +5,11 @@ import {
   UserOutlined,
   LogoutOutlined,
   HomeOutlined,
-  DashboardOutlined,
-  GlobalOutlined,
-  ProductOutlined,
-  FileImageOutlined,
-  ShareAltOutlined,
+  
 } from "@ant-design/icons";
+
+import * as Icons from "@ant-design/icons";
+
 import {
   Layout,
   Menu,
@@ -34,13 +33,17 @@ import { deleteCookie, hasCookie } from "cookies-next";
 import { LOCALSTORAGE } from "../../src/contants/localstorage";
 import type { MenuProps } from "antd";
 import useContent from "./content/store/store";
+import general from "../../src/config/general";
 
+const getAntIcon = (iconName: string) => {
+  const IconComponent = (Icons as any)[iconName];
+  return IconComponent ? React.createElement(IconComponent) : null;
+};
 const AdminLayout = ({ children }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeMenu, setActiveMenu] = useState([]);
 
-  const {activeTab}=useContent()
 
   useEffect(() => {
     const parser = new UAParser();
@@ -53,33 +56,7 @@ const AdminLayout = ({ children }) => {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
 
-  const menuSidebar = [
-    {
-      icon: <DashboardOutlined />,
-      label: "Dashboard",
-      link: "dashboard",
-    },
-    {
-      icon: <ProductOutlined />,
-      label: "Product",
-      link: "product",
-    },
-    {
-      icon: <FileImageOutlined />,
-      label: "Gallery",
-      link: "gallery",
-    },
-    {
-      icon: <UserOutlined />,
-      label: "Agent",
-      link: "agent",
-    },
-    {
-      icon: <GlobalOutlined />,
-      label: "Content",
-      link: `content?tab=0`,
-    },
-  ];
+  const menuSidebar = general.sidebar;
 
   useEffect(() => {
     if (!hasCookie("token")) {
@@ -104,7 +81,7 @@ const AdminLayout = ({ children }) => {
         </Space>
       ),
     },
-   
+
     {
       key: "2",
       label: (
@@ -122,6 +99,18 @@ const AdminLayout = ({ children }) => {
       },
     },
   ];
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      setCollapsed(window.innerWidth < 768);
+    };
+
+    handleResize(); // Jalankan saat pertama kali komponen dimuat
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       {!collapsed && (
@@ -186,7 +175,7 @@ const AdminLayout = ({ children }) => {
                     router.push(`/admin-area/${v.link}`);
                   }}
                 >
-                  {v.icon}
+                  {getAntIcon(v.icon)}
                   <span>{v.label}</span>
                 </Menu.Item>
               );
@@ -238,7 +227,7 @@ const AdminLayout = ({ children }) => {
                     {
                       title: (
                         <Space>
-                          {objectMenuActive?.icon}
+                          {getAntIcon(objectMenuActive?.icon)}
                           {objectMenuActive?.label}
                         </Space>
                       ),
@@ -249,7 +238,7 @@ const AdminLayout = ({ children }) => {
             </Col>
             <Space align="end">
               <Dropdown menu={{ items }}>
-                <Avatar size={"large"}  icon={<UserOutlined/>}>
+                <Avatar size={"large"} icon={<UserOutlined />}>
                   A
                 </Avatar>
               </Dropdown>

@@ -2,9 +2,9 @@ import { Button, Col, Form, Image, Input, Row, Space } from "antd";
 import React, { useEffect, useState } from "react";
 import general from "../../../../src/config/general";
 import WidgetUpload from "../../../../src/components/WidgetUpload";
-import { CKEditor } from "ckeditor4-react";
 import { SaveOutlined } from "@ant-design/icons";
 import useContent from "../store/store";
+import CKEditor from "react-ckeditor-component";
 
 const Profile = () => {
   const { formDataProfile, setFormDataProfile } = useContent();
@@ -27,7 +27,7 @@ const Profile = () => {
             >
               <Input.TextArea
                 cols={12}
-                rows={formDataProfile.image!==''?4:8}
+                rows={formDataProfile.image !== "" ? 4 : 8}
                 value={formDataProfile.title}
                 onChange={(e) => setFormDataProfile("title", e.target.value)}
               />
@@ -53,11 +53,16 @@ const Profile = () => {
               rules={[general.generalInput]}
             >
               <CKEditor
-                initData={formDataProfile.description} // Set default value
-                onChange={(event) => {
-                  const data = event.editor.getData();
-                  setFormDataProfile("description", data);
-                  form.setFieldValue("description", data);
+                activeClass="p10"
+                content={formDataProfile?.description}
+                events={{
+                  blur: (e) => {},
+                  afterPaste: (e) => {},
+                  change: (e) => {
+                    const data = e.editor.getData();
+                    setFormDataProfile("description", data);
+                    form.setFieldValue("description", data);
+                  },
                 }}
               />
             </Form.Item>

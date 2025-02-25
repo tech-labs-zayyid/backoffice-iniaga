@@ -1,3 +1,16 @@
+import {
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UserOutlined,
+  LogoutOutlined,
+  HomeOutlined,
+  DashboardOutlined,
+  GlobalOutlined,
+  ProductOutlined,
+  FileImageOutlined,
+  ShareAltOutlined,
+} from "@ant-design/icons";
+
 export default {
   generalInput: {
     required: true,
@@ -55,6 +68,33 @@ export default {
         "http://res.cloudinary.com/dxjazxzn4/image/upload/v1740324535/ioxuf0ayjb9izrtsa6l1.jpg",
       title: "City Lights",
       description: "A dazzling cityscape at night.",
+    },
+  ],
+  sidebar: [
+    {
+      icon: 'DashboardOutlined',
+      label: "Dashboard",
+      link: "dashboard",
+    },
+    {
+      icon: 'ProductOutlined',
+      label: "Product",
+      link: "product",
+    },
+    {
+      icon: 'FileImageOutlined',
+      label: "Gallery",
+      link: "gallery",
+    },
+    {
+      icon: 'UserOutlined',
+      label: "Agent",
+      link: "agent",
+    },
+    {
+      icon: 'GlobalOutlined',
+      label: "Content",
+      link: `content?tab=0`,
     },
   ],
 };

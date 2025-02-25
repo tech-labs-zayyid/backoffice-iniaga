@@ -57,22 +57,38 @@ const Content = () => {
   };
 
   return (
-    <Row>
-      <Col md={24}>
-        <Card
+    <div
+      style={{
+        backgroundColor: "white",
+        padding: "10px 20px",
+        borderRadius: "10px",
+      }}
+    >
+      <Row>
+        <Col md={24}>
+          <Row justify={"space-between"} align={'middle'}>
+            <Col xs={24} md={9}>
+              <h2 className="text-xl font-bold">Management Content</h2>
+            </Col>
+            <Col xs={24} md={15}>
+              <Tabs
+                activeKey={activeTab}
+                onTabClick={handleTabChange}
+                items={nav as any}
+              />
+            </Col>
+          </Row>
+
+          {/* <Card
           title={<h2 className="text-xl font-bold">Management Content</h2>}
-          extra={
-            <Tabs
-              activeKey={activeTab}
-              onTabClick={handleTabChange}
-              items={nav as any}
-            />
-          }
+          extra={}
         >
           {tabComponent[Number(activeTab)]}
-        </Card>
-      </Col>
-    </Row>
+        </Card> */}
+        </Col>
+        <Col md={24}>{tabComponent[Number(activeTab)]}</Col>
+      </Row>
+    </div>
   );
 };
 

@@ -1,25 +1,7 @@
 import { Tooltip } from "antd";
-import { useEffect, useState } from "react";
+import Image from "next/image";
 
 const MansoryCard = ({ data, callback }) => {
-  const [cachedImages, setCachedImages] = useState({});
-
-  useEffect(() => {
-    const preloadImages = () => {
-      data.forEach((image) => {
-        const img = new Image();
-        img.src = image.image;
-        img.onload = () => {
-          setCachedImages((prev) => ({
-            ...prev,
-            [image.image]: image.image,
-          }));
-        };
-      });
-    };
-    preloadImages();
-  }, [data]);
-
   return (
     <div className="columns-1 sm:columns-2 md:columns-3 gap-4 space-y-4">
       {data.map((image, index) => (
@@ -30,8 +12,51 @@ const MansoryCard = ({ data, callback }) => {
             }}
             className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer break-inside-avoid"
           >
+            {/* <div
+              style={{ width: "100%", height: "100%", position: "relative" }}
+            > */}
+            {/* <Image
+                alt={image.image}
+                src={image.image}
+                layout="fill"
+                objectFit="contain"
+                priority={true}
+                unoptimized
+                width={0}
+                height={0}
+                style={{ width: "100%", height: "auto" }}
+                className="w-full h-auto transition-transform duration-300 group-hover:scale-105 rounded-lg"
+              />
+            </div>
+
+            <Image
+              src={image.image}
+              alt="Category Image"
+              placeholder={image.image}
+              className="w-full h-auto transition-transform duration-300 group-hover:scale-105 rounded-lg"
+              priority={true}
+              unoptimized
+              width={0}
+              height={0}
+              sizes="100vw"
+              style={{ width: "100%", height: "auto" }}
+            /> */}
+            {/* <Image
+              loader={({ src }) => `${src}?w=500&q=75`}
+              // priority={true}
+              // unoptimized
+              src={image.image}
+              alt={image.title}
+              title=""
+              width="100%"
+              height="100%"
+              layout="responsive"
+              objectFit="cover"
+              className="w-full h-auto transition-transform duration-300 group-hover:scale-105 rounded-lg"
+            /> */}
+
             <img
-              src={cachedImages[image.image] || image.image}
+              src={image.image}
               alt={image.title}
               className="w-full h-auto transition-transform duration-300 group-hover:scale-105 rounded-lg"
             />

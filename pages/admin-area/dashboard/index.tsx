@@ -11,13 +11,11 @@ import {
   LineElement,
   PointElement,
 } from "chart.js";
-import { Card, Col, Row } from "antd";
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
-
   LineElement,
   PointElement,
   Title,
@@ -32,12 +30,12 @@ const AgentsChart = () => {
       {
         label: "New Agents Joined",
         data: [5, 10, 8, 15, 20, 18],
-        backgroundColor: "#201D2A", // Warna pastel soft blue
-        borderColor: "#201D2A", // Warna utama
-        pointBackgroundColor: "rgba(255, 52, 172, 1)", // Warna titik
-        pointBorderColor: "#ffffff", // Border titik putih
+        backgroundColor: "#201D2A",
+        borderColor: "#201D2A",
+        pointBackgroundColor: "rgba(255, 52, 172, 1)",
+        pointBorderColor: "#ffffff",
         borderWidth: 3,
-        tension: 0.3, // Membuat garis lebih smooth
+        tension: 0.3,
         fill: true,
       },
     ],
@@ -45,14 +43,15 @@ const AgentsChart = () => {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false, // Supaya ukuran chart bisa fleksibel
     plugins: {
       legend: {
-        position: "top" as const,
+        position: "top",
         labels: {
           font: {
-            family: "Inter, sans-serif", // Gunakan font Inter
+            family: "Inter, sans-serif",
           },
-          color: "#666666", // Warna legend soft
+          color: "#666666",
         },
       },
       title: {
@@ -68,127 +67,131 @@ const AgentsChart = () => {
     scales: {
       x: {
         ticks: {
-          color: "#888", // Warna label axis X
+          color: "#888",
           font: {
             family: "Inter, sans-serif",
           },
         },
         grid: {
-          color: "rgba(200, 200, 200, 0.2)", // Grid soft
+          color: "rgba(200, 200, 200, 0.2)",
         },
       },
       y: {
         ticks: {
-          color: "#888", // Warna label axis Y
+          color: "#888",
           font: {
             family: "Inter, sans-serif",
           },
         },
         grid: {
-          color: "rgba(200, 200, 200, 0.2)", // Grid soft
+          color: "rgba(200, 200, 200, 0.2)",
         },
       },
     },
   };
 
-  return <Line data={data} options={options} />;
+  return (
+    <div className="w-full h-[300px] md:h-[400px]">
+      <Line data={data} options={options} />
+    </div>
+  );
 };
-const Sales = () => {
-    const data = {
-      labels: ["January", "February", "March", "April", "May", "June"],
-      datasets: [
-        {
-          label: "New Agents Joined",
-          data: [5, 10, 8, 15, 20, 18],
-          backgroundColor: [
-            "rgba(43, 190, 203, 0.6)", // Biru soft
-            "rgba(255, 52, 172, 0.6)", // Pink soft
-            "rgba(253, 230, 243, 0.6)", // Peach pastel
-            "rgba(144, 202, 249, 0.6)", // Light Blue
-            "rgba(123, 239, 178, 0.6)", // Soft Green
-            "rgba(250, 177, 160, 0.6)", // Light Orange
-          ],
-          borderColor: [
-            "rgba(43, 190, 203, 1)",
-            "rgba(255, 52, 172, 1)",
-            "rgba(253, 230, 243, 1)",
-            "rgba(144, 202, 249, 1)",
-            "rgba(123, 239, 178, 1)",
-            "rgba(250, 177, 160, 1)",
-          ],
-          borderWidth: 2,
-          borderRadius: 8, // Membuat sudut lebih halus
-        },
-      ],
-    };
 
-    const options = {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: "top" as const,
-          labels: {
-            font: {
-              family: "Inter, sans-serif",
-            },
-            color: "#666",
-          },
-        },
-        title: {
-          display: true,
-          text: "Monthly New Agents Joined",
+const Sales = () => {
+  const data = {
+    labels: ["January", "February", "March", "April", "May", "June"],
+    datasets: [
+      {
+        label: "New Agents Joined",
+        data: [5, 10, 8, 15, 20, 18],
+        backgroundColor: [
+          "rgba(43, 190, 203, 0.6)",
+          "rgba(255, 52, 172, 0.6)",
+          "rgba(253, 230, 243, 0.6)",
+          "rgba(144, 202, 249, 0.6)",
+          "rgba(123, 239, 178, 0.6)",
+          "rgba(250, 177, 160, 0.6)",
+        ],
+        borderColor: [
+          "rgba(43, 190, 203, 1)",
+          "rgba(255, 52, 172, 1)",
+          "rgba(253, 230, 243, 1)",
+          "rgba(144, 202, 249, 1)",
+          "rgba(123, 239, 178, 1)",
+          "rgba(250, 177, 160, 1)",
+        ],
+        borderWidth: 2,
+        borderRadius: 8,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false, // Agar chart bisa menyesuaikan ukuran layar
+    plugins: {
+      legend: {
+        position: "top",
+        labels: {
           font: {
-            size: 18,
             family: "Inter, sans-serif",
           },
-          color: "#444",
+          color: "#666",
         },
       },
-      scales: {
-        x: {
-          ticks: {
-            color: "#888",
-            font: {
-              family: "Inter, sans-serif",
-            },
-          },
-          grid: {
-            color: "rgba(200, 200, 200, 0.2)",
+      title: {
+        display: true,
+        text: "Monthly New Agents Joined",
+        font: {
+          size: 18,
+          family: "Inter, sans-serif",
+        },
+        color: "#444",
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: "#888",
+          font: {
+            family: "Inter, sans-serif",
           },
         },
-        y: {
-          ticks: {
-            color: "#888",
-            font: {
-              family: "Inter, sans-serif",
-            },
-          },
-          grid: {
-            color: "rgba(200, 200, 200, 0.2)",
-          },
+        grid: {
+          color: "rgba(200, 200, 200, 0.2)",
         },
       },
-    };
+      y: {
+        ticks: {
+          color: "#888",
+          font: {
+            family: "Inter, sans-serif",
+          },
+        },
+        grid: {
+          color: "rgba(200, 200, 200, 0.2)",
+        },
+      },
+    },
+  };
 
-
-
-  return <Bar data={data} options={options} />;
+  return (
+    <div className="w-full h-[300px] md:h-[400px]">
+      <Bar data={data} options={options} />
+    </div>
+  );
 };
 
 const Dashboard = () => {
   return (
-    <Row gutter={[10, 10]}>
-      <Col md={12}>
-        <Card >
-          <Sales />
-        </Card>
-      </Col>
-      <Col md={12}>
-        <Card >
-          <AgentsChart />
-        </Card>
-      </Col>
-    </Row>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+      <div className="bg-white shadow-lg rounded-lg p-4 min-h-[350px]">
+        <Sales />
+      </div>
+      <div className="bg-white shadow-lg rounded-lg p-4 min-h-[350px]">
+        <AgentsChart />
+      </div>
+    </div>
   );
 };
 

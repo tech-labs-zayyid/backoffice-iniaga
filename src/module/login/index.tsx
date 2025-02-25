@@ -33,7 +33,7 @@ const Login = () => {
     if (user !== null) {
       setCookie("token", user.token, { maxAge: 60 * 6 * 24 * 7 });
       localStorage.setItem("role", "admin");
-      router.push("/dashboard");
+      router.push("/admin-area/dashboard");
     }
   }, [user]);
 
