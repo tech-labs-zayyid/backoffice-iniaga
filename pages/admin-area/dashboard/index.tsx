@@ -46,7 +46,7 @@ const AgentsChart = () => {
     maintainAspectRatio: false, // Supaya ukuran chart bisa fleksibel
     plugins: {
       legend: {
-        position: "top",
+        position: "top" as const,
         labels: {
           font: {
             family: "Inter, sans-serif",
@@ -131,7 +131,7 @@ const Sales = () => {
     maintainAspectRatio: false, // Agar chart bisa menyesuaikan ukuran layar
     plugins: {
       legend: {
-        position: "top",
+        position: "top" as const,
         labels: {
           font: {
             family: "Inter, sans-serif",
