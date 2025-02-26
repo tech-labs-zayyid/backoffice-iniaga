@@ -4,7 +4,7 @@ import general from "../../../../src/config/general";
 import WidgetUpload from "../../../../src/components/WidgetUpload";
 import { SaveOutlined } from "@ant-design/icons";
 import CKEditor from "react-ckeditor-component";
-import { useContentContext } from "../context";
+import { useContentContext } from "../../../../src/context/content";
 
 const Profile = () => {
   const [form] = Form.useForm();

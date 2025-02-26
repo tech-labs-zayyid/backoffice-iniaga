@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Input, Space, Button } from "antd";
 import general from "../../../../src/config/general";
 import { SaveOutlined } from "@ant-design/icons";
-import { useContentContext } from "../context";
+import { useContentContext } from "../../../../src/context/content";
 const SocialMedia = () => {
   const { socialMedia, setSocialMedia } = useContentContext();
 

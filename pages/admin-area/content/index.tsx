@@ -15,7 +15,7 @@ import {
   ExpandOutlined,
   LinkOutlined,
 } from "@ant-design/icons";
-import { ContentProvider } from "./context";
+import { ContentProvider } from "../../../src/context/content";
 const Content = () => {
   const router = useRouter();
   const { query } = router;
