@@ -1,97 +1,93 @@
 import { Button, Col, Form, Image, Input, Row, Space } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import general from "../../../../src/config/general";
 import WidgetUpload from "../../../../src/components/WidgetUpload";
 import { SaveOutlined } from "@ant-design/icons";
 import CKEditor from "react-ckeditor-component";
+import { useContentContext } from "../context";
 
 const Profile = () => {
-   const initialState = {
-     title: "",
-     image: "",
-     description: "",
-   };
-   const [formDataProfile, setFormDataProfile] = useState(initialState);
+  const [form] = Form.useForm();
+  const { profile, setProfile, isRenderCkEditor, setIsRenderCkEditor } =
+    useContentContext();
+  useEffect(() => {
+    form.setFieldsValue(profile);
+  }, [form, profile]);
+  const handleChange = (changedValues: any, allValues: any) => {
+    setProfile(allValues);
+  };
+  const handleEditorChange = (e: any) => {
+    const data = e.editor.getData();
+    setProfile({
+      ...profile,
+      description: data,
+    });
+    form.setFieldValue("description", data);
+  };
+  const handleImageUpload = (response: any) => {
+    form.setFieldValue("image", response.info.url);
+    setProfile({
+      ...profile,
+      image: response.info.url,
+    });
+  };
 
-   const [form] = Form.useForm();
+  
 
-   useEffect(() => {
-     form.setFieldsValue(formDataProfile);
-   }, []);
+  
 
-   return (
-     <React.Fragment>
-       <Form layout="vertical" form={form}>
-         <Row gutter={[10, 10]}>
-           <Col md={8}>
-             <Form.Item
-               label="title"
-               name="title"
-               rules={[general.generalInput]}
-             >
-               <Input.TextArea
-                 cols={12}
-                 rows={formDataProfile.image !== "" ? 4 : 8}
-                 value={formDataProfile.title}
-                 onChange={(e) =>
-                   setFormDataProfile({
-                     ...formDataProfile,
-                     title: e.target.value,
-                   })
-                 }
-               />
-             </Form.Item>
-             <Form.Item
-               label="Image"
-               name="image"
-               rules={[general.generalInput]}
-             >
-               <WidgetUpload
-                 onSuccess={(response) => {
-                   form.setFieldValue("image", response.info.url);
-                   setFormDataProfile({
-                     ...formDataProfile,
-                     image: response.info.url,
-                   });
-                 }}
-                 link={formDataProfile?.image}
-               />
-             </Form.Item>
-           </Col>
-           <Col md={16}>
-             <Form.Item
-               label="Description"
-               name="description"
-               rules={[general.generalInput]}
-             >
-               <CKEditor
-                 activeClass="p10"
-                 content={formDataProfile?.description}
-                 events={{
-                   blur: (e) => {},
-                   afterPaste: (e) => {},
-                   change: (e) => {
-                     const data = e.editor.getData();
-                      setFormDataProfile({
-                        ...formDataProfile,
-                        description: data,
-                      });
-                     form.setFieldValue("description", data);
-                   },
-                 }}
-               />
-             </Form.Item>
-           </Col>
-           <Col md={24}>
-             <Space align="end" className="w-full justify-end">
-               <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
-                 Save
-               </Button>
-             </Space>
-           </Col>
-         </Row>
-       </Form>
-     </React.Fragment>
-   );
+  return (
+    <React.Fragment>
+      <Form layout="vertical" form={form} onValuesChange={handleChange}>
+        <Row gutter={[10, 10]}>
+          <Col md={8}>
+            <Form.Item
+              label="title"
+              name="title"
+              rules={[general.generalInput]}
+            >
+              <Input.TextArea rows={profile.image !== "" ? 4 : 8} />
+            </Form.Item>
+            <Form.Item
+              label="Image"
+              name="image"
+              rules={[general.generalInput]}
+            >
+              <WidgetUpload
+                onSuccess={handleImageUpload}
+                link={profile?.image}
+              />
+            </Form.Item>
+          </Col>
+          <Col md={16}>
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[general.generalInput]}
+            >
+              <CKEditor
+                isScriptLoaded={false}
+                activeClass="p10"
+                content={profile?.description}
+                events={{
+                  
+                  blur: (e) => {},
+                  afterPaste: (e) => {},
+                  change: handleEditorChange,
+                }}
+              />
+            </Form.Item>
+          </Col>
+          <Col md={24}>
+            <Space align="end" className="w-full justify-end">
+              <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
+                Save
+              </Button>
+            </Space>
+          </Col>
+        </Row>
+      </Form>
+    </React.Fragment>
+  );
 };
 export default Profile;

@@ -15,7 +15,7 @@ import {
   ExpandOutlined,
   LinkOutlined,
 } from "@ant-design/icons";
-
+import { ContentProvider } from "./context";
 const Content = () => {
   const router = useRouter();
   const { query } = router;
@@ -77,33 +77,37 @@ const Content = () => {
       { shallow: true }
     );
   };
-
+ 
   return (
-    <div
-      style={{
-        backgroundColor: "white",
-        padding: "10px 20px",
-        borderRadius: "10px",
-      }}
-    >
-      <Row>
-        <Col md={24}>
-          <Row justify={"space-between"} align={"middle"}>
-            <Col xs={24} md={9}>
-              <h2 className="text-xl font-bold">Management Content</h2>
-            </Col>
-            <Col xs={24} md={15}>
-              <Tabs
-                activeKey={Number(activeTab) as any}
-                onTabClick={handleTabChange}
-                items={nav as any}
-              />
-            </Col>
-          </Row>
-        </Col>
-        <Col md={24}>{tabComponent[Number(activeTab)]}</Col>
-      </Row>
-    </div>
+    <ContentProvider>
+      <div
+        style={{
+          backgroundColor: "white",
+          padding: "10px 20px",
+          borderRadius: "10px",
+        }}
+      >
+        {/* <div id="editor" style={{ height: "200px" }}></div> */}
+
+        <Row>
+          <Col md={24}>
+            <Row justify={"space-between"} align={"middle"}>
+              <Col xs={24} md={9}>
+                <h2 className="text-xl font-bold">Management Content</h2>
+              </Col>
+              <Col xs={24} md={15}>
+                <Tabs
+                  activeKey={Number(activeTab) as any}
+                  onTabClick={handleTabChange}
+                  items={nav as any}
+                />
+              </Col>
+            </Row>
+          </Col>
+          <Col md={24}>{tabComponent[Number(activeTab)]}</Col>
+        </Row>
+      </div>
+    </ContentProvider>
   );
 };
 

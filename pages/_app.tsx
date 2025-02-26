@@ -41,10 +41,11 @@ const path = router.pathname.split("/") || "";
         <meta name="keywords" content="titla, meta, nextjs" />
         <meta name="author" content="Syamlal CM" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
         <link rel="icon" href={config.favicon} />
         <title>{path?.[2] || path?.[1]}</title>
       </Head>
-    
+
       {isPageLogin ? (
         <Component {...pageProps} />
       ) : (
@@ -52,7 +53,6 @@ const path = router.pathname.split("/") || "";
           <Component {...pageProps} />
         </AdminLayout>
       )}
-      
     </div>
   );
 }
