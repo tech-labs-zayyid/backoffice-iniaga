@@ -12,11 +12,37 @@ import general from "../../../src/config/general";
 import WidgetUpload from "../../../src/components/WidgetUpload";
 import ModalDelete from "../../../src/components/ModalDelete";
 import CKEditor from "react-ckeditor-component";
-import useProductStore from "./store";
 
 
 const Product = () => {
-  const { products, formData, setFormData } = useProductStore();
+  const [formData, setFormData] = useState({
+    modal: false,
+    action: "add",
+    payload: { name: "", description: "", image: "", category: "" },
+  });
+  const [products, setProducts] = useState([
+    {
+      image:
+        "https://res.cloudinary.com/dxjazxzn4/image/upload/v1740324535/ioxuf0ayjb9izrtsa6l1.jpg",
+      name: "Beautiful Sunset",
+      category: "Transportation",
+      description: "A stunning sunset over the ocean.",
+    },
+    {
+      image:
+        "https://res.cloudinary.com/dxjazxzn4/image/upload/v1740324507/qugbfsf7b5nzrjyucjor.jpg",
+      name: "Mountain View",
+      category: "Transportation",
+      description: "A breathtaking view of the mountains.",
+    },
+    {
+      image:
+        "https://res.cloudinary.com/dxjazxzn4/image/upload/v1740324459/zm40pjf9pkkcoerjyiex.jpg",
+      name: "City Lights",
+      category: "Transportation",
+      description: "A dazzling cityscape at night.",
+    },
+  ]);
   const [form] = Form.useForm();
 
   const close = (): void => {

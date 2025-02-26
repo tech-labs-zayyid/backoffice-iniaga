@@ -27,7 +27,7 @@ import ModalDelete from "../../../../src/components/ModalDelete";
 import general from "../../../../src/config/general";
 import WidgetUpload from "../../../../src/components/WidgetUpload";
 
-const Testimonu = () => {
+const Testimoni = () => {
   const initialState = {
     name: "",
     title: "",
@@ -42,14 +42,16 @@ const Testimonu = () => {
   const [form] = Form.useForm();
   const datas = [
     {
-      image:"https://iniaga.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fpeople01.85d6f24e.png&w=48&q=75",
+      image:
+        "https://iniaga.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fpeople01.85d6f24e.png&w=48&q=75",
       name: "Boby Honda",
       title: "Sales Honda Pasteur",
       description:
         "Dengan fitur yang mudah digunakan, saya bisa fokus pada yang paling penting: membangun hubungan dengan pelanggan dan agen, serta mencapai target penjualan",
     },
     {
-      image:"https://iniaga.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fanhar.881ec77d.jpg&w=48&q=75",
+      image:
+        "https://iniaga.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fanhar.881ec77d.jpg&w=48&q=75",
       name: "Anhar",
       title: "Sales Tunas Toyota",
       description:
@@ -78,8 +80,7 @@ const Testimonu = () => {
         title={`Form ${formData.action === "edit" ? "Edit" : "Add"} Testimoni`}
       >
         <Form
-          onFinish={(e) => {
-          }}
+          onFinish={(e) => {}}
           form={form}
           layout="vertical"
           name="basic"
@@ -91,7 +92,11 @@ const Testimonu = () => {
           <Form.Item label="Title" name="title" rules={[general.generalInput]}>
             <Input />
           </Form.Item>
-          <Form.Item label="Description" name="description" rules={[general.generalInput]}>
+          <Form.Item
+            label="Description"
+            name="description"
+            rules={[general.generalInput]}
+          >
             <Input.TextArea />
           </Form.Item>
           <Form.Item label="Image" name="image" rules={[general.generalInput]}>
@@ -177,7 +182,7 @@ const Testimonu = () => {
                         name: record.name,
                         title: record.title,
                         description: record.description,
-                        image: record.image
+                        image: record.image,
                       });
                       setFormData({
                         ...formData,
@@ -215,4 +220,4 @@ const Testimonu = () => {
   );
 };
 
-export default Testimonu;
+export default Testimoni;

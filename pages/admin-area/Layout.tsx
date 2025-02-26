@@ -31,9 +31,9 @@ import Head from "next/head";
 import UAParser from "ua-parser-js";
 import { deleteCookie, hasCookie } from "cookies-next";
 import { LOCALSTORAGE } from "../../src/contants/localstorage";
-import type { MenuProps } from "antd";
-import useContent from "./content/store/store";
 import general from "../../src/config/general";
+
+import type { MenuProps } from "antd";
 
 const getAntIcon = (iconName: string) => {
   const IconComponent = (Icons as any)[iconName];
