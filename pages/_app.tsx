@@ -13,6 +13,7 @@ import {
 import { LOCALSTORAGE } from "../src/contants/localstorage";
 import AdminLayout from "./admin-area/Layout";
 import config from "../src/config/config";
+import { GeneralProvider } from "../src/context/general";
 
 function MyApp({ Component, pageProps, router }: AppProps) {
   // Set up NProgress
@@ -49,9 +50,11 @@ const path = router.pathname.split("/") || "";
       {isPageLogin ? (
         <Component {...pageProps} />
       ) : (
-        <AdminLayout>
-          <Component {...pageProps} />
-        </AdminLayout>
+        <GeneralProvider>
+          <AdminLayout>
+            <Component {...pageProps} />
+          </AdminLayout>
+        </GeneralProvider>
       )}
     </div>
   );

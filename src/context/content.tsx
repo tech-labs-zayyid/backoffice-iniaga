@@ -20,16 +20,13 @@ interface ProfileForm {
 interface ContentContextType {
   socialMedia: SocialMediaForm;
   profile: ProfileForm;
-  isRenderCkEditor: boolean;
 
   setSocialMedia: (data: SocialMediaForm) => void;
   setProfile: (data: ProfileForm) => void;
-  setIsRenderCkEditor: (data: any) => void;
 }
 
 // Buat default value
 const defaultValues: ContentContextType = {
-  isRenderCkEditor: false,
   socialMedia: {
     facebook: "",
     instagram: "",
@@ -44,7 +41,6 @@ const defaultValues: ContentContextType = {
   },
   setSocialMedia: () => {},
   setProfile: () => {},
-  setIsRenderCkEditor: () => {},
 };
 
 // Buat context
@@ -56,7 +52,6 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
     defaultValues.socialMedia
   );
   const [profile, setProfile] = useState<ProfileForm>(defaultValues.profile);
-  const [isRenderCkEditor, setIsRenderCkEditor] = useState<boolean>(false);
 
   return (
     <ContentContext.Provider
@@ -65,8 +60,6 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
         profile,
         setSocialMedia,
         setProfile,
-        isRenderCkEditor,
-        setIsRenderCkEditor,
       }}
     >
       {children}

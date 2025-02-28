@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   Button,
   Card,
+  FloatButton,
   Form,
   Input,
   Modal,
@@ -21,6 +22,7 @@ import {
 import general from "../../../../src/config/general";
 import WidgetUpload from "../../../../src/components/WidgetUpload";
 import MansoryCard from "../../../../src/components/MansoryCard";
+import { useGeneralContext } from "../../../../src/context/general";
 
 const Banner = () => {
   const initialState = {
@@ -39,6 +41,7 @@ const Banner = () => {
     form.resetFields();
     setFormData({ payload: initialState, modal: false, action: "" });
   };
+  const {isMobile}=useGeneralContext()
   return (
     <React.Fragment>
       <ModalDelete
@@ -56,8 +59,7 @@ const Banner = () => {
         title={`Form ${formData.action === "detail" ? "Detail" : "Add"} Banner`}
       >
         <Form
-          onFinish={(e) => {
-          }}
+          onFinish={(e) => {}}
           form={form}
           layout="vertical"
           name="basic"
@@ -109,18 +111,19 @@ const Banner = () => {
           </Space>
         </Form>
       </Modal>
-      <Row justify={"end"}>
-        <Button
-          type="primary"
-          icon={<PlusCircleOutlined />}
-          onClick={() =>
-            setFormData({ ...formData, modal: true, action: "add" })
-          }
-        >
-          Add Banner
-        </Button>
-      </Row>
-      <br />
+      {!isMobile && (
+        <Row justify={"end"}>
+          <Button
+            type="primary"
+            icon={<PlusCircleOutlined />}
+            onClick={() =>
+              setFormData({ ...formData, modal: true, action: "add" })
+            }
+          >
+            Add Banner
+          </Button>
+        </Row>
+      )}
 
       <MansoryCard
         data={general.cloudinaryImage}
@@ -133,6 +136,16 @@ const Banner = () => {
           });
         }}
       />
+      {isMobile && (
+        <FloatButton
+          icon={<PlusCircleOutlined />}
+          type="primary"
+          style={{ insetInlineEnd: 24 }}
+          onClick={() =>
+            setFormData({ ...formData, modal: true, action: "add" })
+          }
+        />
+      )}
     </React.Fragment>
   );
 };

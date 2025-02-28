@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Form, Input, Modal, Select, Space } from "antd";
+import {
+  Button,
+  Card,
+  Form,
+  FloatButton,
+  Input,
+  Modal,
+  Select,
+  Space,
+} from "antd";
 
 import {
   PlusCircleOutlined,
@@ -12,9 +21,10 @@ import general from "../../../src/config/general";
 import WidgetUpload from "../../../src/components/WidgetUpload";
 import ModalDelete from "../../../src/components/ModalDelete";
 import CKEditor from "react-ckeditor-component";
-
+import { useGeneralContext } from "../../../src/context/general";
 
 const Product = () => {
+  const { isMobile } = useGeneralContext();
   const [formData, setFormData] = useState({
     modal: false,
     action: "add",
@@ -50,10 +60,10 @@ const Product = () => {
     setFormData({ payload: null, modal: false, action: "" });
   };
 
-
   const isModalForm =
     (formData.modal && formData.action === "add") ||
     formData.action === "detail";
+
 
   return (
     <React.Fragment>
@@ -65,7 +75,7 @@ const Product = () => {
       {isModalForm && (
         <Modal
           centered
-          width={"60vw"}
+          width={isMobile?"100vw":"60vw"}
           maskClosable={false}
           footer={null}
           onCancel={close}
@@ -152,18 +162,20 @@ const Product = () => {
       <Card
         title={<h2 className="text-xl font-bold">Management Product</h2>}
         extra={
-          <Button
-            type="primary"
-            icon={<PlusCircleOutlined />}
-            onClick={() => {
-              setFormData({ ...formData, modal: true, action: "add" });
-            }}
-          >
-            Add Product
-          </Button>
+          !isMobile && (
+            <Button
+              type="primary"
+              icon={<PlusCircleOutlined />}
+              onClick={() => {
+                setFormData({ ...formData, modal: true, action: "add" });
+              }}
+            >
+              Add Product
+            </Button>
+          )
         }
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {products?.map((item, index) => (
             <div
               key={index}
@@ -225,6 +237,14 @@ const Product = () => {
           ))}
         </div>
       </Card>
+      {isMobile && (
+        <FloatButton
+          icon={<PlusCircleOutlined />}
+          type="primary"
+          style={{ insetInlineEnd: 24 }}
+          onClick={()=>setFormData({ ...formData, modal: true, action: "add" })}
+        />
+      )}
     </React.Fragment>
   );
 };

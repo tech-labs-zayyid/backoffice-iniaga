@@ -4,6 +4,7 @@ import {
   Avatar,
   Button,
   Card,
+  FloatButton,
   Form,
   Input,
   Modal,
@@ -26,12 +27,12 @@ import {
 import general from "../../../src/config/general";
 import WidgetUpload from "../../../src/components/WidgetUpload";
 import ModalDelete from "../../../src/components/ModalDelete";
+import { useGeneralContext } from "../../../src/context/general";
 // import Link from "antd/es/typography/Link";
 
 const Agent = () => {
   const initialState = {
     name: "",
-    referral_code: "",
     join_date: "",
     status: "",
     link: "",
@@ -78,6 +79,8 @@ const Agent = () => {
     form.resetFields();
     setFormData({ payload: initialState, modal: false, action: "" });
   };
+
+  const { isMobile } = useGeneralContext();
   return (
     <React.Fragment>
       <ModalDelete
@@ -96,8 +99,7 @@ const Agent = () => {
         title={`Form ${formData.action === "edit" ? "Edit" : "Add"} Agent`}
       >
         <Form
-          onFinish={(e) => {
-          }}
+          onFinish={(e) => {}}
           form={form}
           layout="vertical"
           name="basic"
@@ -106,14 +108,6 @@ const Agent = () => {
           <Form.Item label="Name" name="name" rules={[general.generalInput]}>
             <Input />
           </Form.Item>
-          <Form.Item
-            label="Referral Code"
-            name="referral_code"
-            rules={[general.generalInput]}
-          >
-            <Input />
-          </Form.Item>
-
           <Form.Item
             label="Status"
             name="status"
@@ -158,15 +152,17 @@ const Agent = () => {
       <Card
         title={<h2 className="text-xl font-bold">Management Agent</h2>}
         extra={
-          <Button
-            type="primary"
-            icon={<PlusCircleOutlined />}
-            onClick={() =>
-              setFormData({ ...formData, modal: true, action: "add" })
-            }
-          >
-            Add Agent
-          </Button>
+          !isMobile && (
+            <Button
+              type="primary"
+              icon={<PlusCircleOutlined />}
+              onClick={() =>
+                setFormData({ ...formData, modal: true, action: "add" })
+              }
+            >
+              Add Agent
+            </Button>
+          )
         }
       >
         <Table
@@ -218,7 +214,7 @@ const Agent = () => {
             },
 
             {
-              fixed: "right",
+              fixed: !isMobile ? "right" : null,
               title: "#",
               dataIndex: "image",
               key: "image",
@@ -229,7 +225,6 @@ const Agent = () => {
                       onClick={() => {
                         form.setFieldsValue({
                           name: record.name,
-                          referral_code: record.referral_code,
                           status: record.status,
                           image: record.image,
                         });
@@ -266,6 +261,16 @@ const Agent = () => {
           ]}
         />
       </Card>
+      {isMobile && (
+        <FloatButton
+          icon={<PlusCircleOutlined />}
+          type="primary"
+          style={{ insetInlineEnd: 24 }}
+          onClick={() =>
+            setFormData({ ...formData, modal: true, action: "add" })
+          }
+        />
+      )}
     </React.Fragment>
   );
 };

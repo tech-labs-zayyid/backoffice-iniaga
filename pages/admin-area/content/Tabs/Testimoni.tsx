@@ -13,6 +13,7 @@ import {
   Row,
   Col,
   Avatar,
+  FloatButton,
 } from "antd";
 
 import {
@@ -26,6 +27,7 @@ import {
 import ModalDelete from "../../../../src/components/ModalDelete";
 import general from "../../../../src/config/general";
 import WidgetUpload from "../../../../src/components/WidgetUpload";
+import { useGeneralContext } from "../../../../src/context/general";
 
 const Testimoni = () => {
   const initialState = {
@@ -62,6 +64,7 @@ const Testimoni = () => {
     form.resetFields();
     setFormData({ payload: initialState, modal: false, action: "" });
   };
+  const {isMobile}=useGeneralContext()
   return (
     <React.Fragment>
       <ModalDelete
@@ -127,18 +130,22 @@ const Testimoni = () => {
           </Space>
         </Form>
       </Modal>
-      <Row justify={"end"}>
-        <Button
-          type="primary"
-          icon={<PlusCircleOutlined />}
-          onClick={() =>
-            setFormData({ ...formData, modal: true, action: "add" })
-          }
-        >
-          Add Testimoni
-        </Button>
-      </Row>
-      <br />
+      {!isMobile && (
+        <React.Fragment>
+          <Row justify={"end"}>
+            <Button
+              type="primary"
+              icon={<PlusCircleOutlined />}
+              onClick={() =>
+                setFormData({ ...formData, modal: true, action: "add" })
+              }
+            >
+              Add Testimoni
+            </Button>
+          </Row>
+          <br />
+        </React.Fragment>
+      )}
       <Table
         dataSource={datas}
         scroll={{ x: "max-content" }}
@@ -169,7 +176,7 @@ const Testimoni = () => {
             key: "description",
           },
           {
-            fixed: "right",
+            fixed: isMobile ? null : "right",
             title: "#",
             dataIndex: "image",
             key: "image",
@@ -216,6 +223,16 @@ const Testimoni = () => {
           },
         ]}
       />
+      {isMobile && (
+        <FloatButton
+          icon={<PlusCircleOutlined />}
+          type="primary"
+          style={{ insetInlineEnd: 24 }}
+          onClick={() =>
+            setFormData({ ...formData, modal: true, action: "add" })
+          }
+        />
+      )}
     </React.Fragment>
   );
 };

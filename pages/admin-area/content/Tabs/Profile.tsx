@@ -8,8 +8,7 @@ import { useContentContext } from "../../../../src/context/content";
 
 const Profile = () => {
   const [form] = Form.useForm();
-  const { profile, setProfile, isRenderCkEditor, setIsRenderCkEditor } =
-    useContentContext();
+  const { profile, setProfile } = useContentContext();
   useEffect(() => {
     form.setFieldsValue(profile);
   }, [form, profile]);
@@ -40,7 +39,7 @@ const Profile = () => {
     <React.Fragment>
       <Form layout="vertical" form={form} onValuesChange={handleChange}>
         <Row gutter={[10, 10]}>
-          <Col md={8}>
+          <Col md={8} xs={24} sm={24}>
             <Form.Item
               label="title"
               name="title"
@@ -78,7 +77,7 @@ const Profile = () => {
               />
             </Form.Item>
           </Col>
-          <Col md={24}>
+          <Col md={24} xs={24}>
             <Space align="end" className="w-full justify-end">
               <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
                 Save

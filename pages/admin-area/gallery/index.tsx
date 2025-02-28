@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   Button,
   Card,
+  FloatButton,
   Form,
   Input,
   Modal,
@@ -21,8 +22,11 @@ import general from "../../../src/config/general";
 import WidgetUpload from "../../../src/components/WidgetUpload";
 import MansoryCard from "../../../src/components/MansoryCard";
 import ModalDelete from "../../../src/components/ModalDelete";
+import { useGeneralContext } from "../../../src/context/general";
 
 const Gallery = () => {
+  const { isMobile } = useGeneralContext();
+
   const initialState = {
     title: "",
     description: "",
@@ -57,8 +61,7 @@ const Gallery = () => {
         } Gallery`}
       >
         <Form
-          onFinish={(e) => {
-          }}
+          onFinish={(e) => {}}
           form={form}
           layout="vertical"
           name="basic"
@@ -117,15 +120,17 @@ const Gallery = () => {
       <Card
         title={<h2 className="text-xl font-bold">Management Gallery</h2>}
         extra={
-          <Button
-            type="primary"
-            icon={<PlusCircleOutlined />}
-            onClick={() =>
-              setFormData({ ...formData, modal: true, action: "add" })
-            }
-          >
-            Add Gallery
-          </Button>
+          !isMobile && (
+            <Button
+              type="primary"
+              icon={<PlusCircleOutlined />}
+              onClick={() =>
+                setFormData({ ...formData, modal: true, action: "add" })
+              }
+            >
+              Add Gallery
+            </Button>
+          )
         }
       >
         <MansoryCard
@@ -140,6 +145,16 @@ const Gallery = () => {
           }}
         />
       </Card>
+      {isMobile && (
+        <FloatButton
+          icon={<PlusCircleOutlined />}
+          type="primary"
+          style={{ insetInlineEnd: 24 }}
+          onClick={() =>
+            setFormData({ ...formData, modal: true, action: "add" })
+          }
+        />
+      )}
     </React.Fragment>
   );
 };

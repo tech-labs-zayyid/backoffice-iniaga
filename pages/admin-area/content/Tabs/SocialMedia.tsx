@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Space, Button } from "antd";
+import { Form, Input, Space, Button, Row, Col } from "antd";
 import general from "../../../../src/config/general";
 import { SaveOutlined } from "@ant-design/icons";
 import { useContentContext } from "../../../../src/context/content";
+import { useGeneralContext } from "../../../../src/context/general";
 const SocialMedia = () => {
   const { socialMedia, setSocialMedia } = useContentContext();
 
@@ -25,56 +26,62 @@ const SocialMedia = () => {
   const handleSubmit = (values: any) => {
     console.log("Form Data Submitted:", values);
   };
+  const { isMobile } = useGeneralContext();
   return (
-    <React.Fragment>
-      <Form
-        layout="vertical"
-        form={form}
-        onValuesChange={handleChange}
-        onFinish={handleSubmit}
-      >
-        <Form.Item
-          label="Link Facebook"
-          name={"facebook"}
-          rules={[general.urlInput as any]}
+    <Row>
+      <Col md={24}>
+        <Form
+          layout={isMobile ? null : "vertical"}
+          form={form}
+          onValuesChange={handleChange}
+          onFinish={handleSubmit}
         >
-          <Input placeholder="https://facebook.com/xxx" />
-        </Form.Item>
-        <Form.Item
-          label="Link Instagram"
-          name={"instagram"}
-          rules={[general.urlInput as any]}
-        >
-          <Input placeholder="https://instagram.com/xxx" />
-        </Form.Item>
-        <Form.Item
-          label="Link Twitter"
-          name={"twitter"}
-          rules={[general.urlInput as any]}
-        >
-          <Input placeholder="https://twitter.com/xxx" />
-        </Form.Item>
-        <Form.Item
-          label="Link Youtube"
-          name={"youtube"}
-          rules={[general.urlInput as any]}
-        >
-          <Input placeholder="https://youtube.com/xxx" />
-        </Form.Item>
-        <Form.Item
-          label="Link Tik Tok"
-          name={"tiktok"}
-          rules={[general.urlInput as any]}
-        >
-          <Input placeholder="https://tiktok.com/xxx" />
-        </Form.Item>
-        <Space align="end" className="w-full justify-end">
-          <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
-            Save
-          </Button>
-        </Space>
-      </Form>
-    </React.Fragment>
+          <Form.Item
+            label="Link Facebook"
+            name={"facebook"}
+            rules={[general.urlInput as any]}
+          >
+            <Input
+              placeholder="https://facebook.com/xxx"
+              style={{ width: "100%" }}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Link Instagram"
+            name={"instagram"}
+            rules={[general.urlInput as any]}
+          >
+            <Input placeholder="https://instagram.com/xxx" />
+          </Form.Item>
+          <Form.Item
+            label="Link Twitter"
+            name={"twitter"}
+            rules={[general.urlInput as any]}
+          >
+            <Input placeholder="https://twitter.com/xxx" />
+          </Form.Item>
+          <Form.Item
+            label="Link Youtube"
+            name={"youtube"}
+            rules={[general.urlInput as any]}
+          >
+            <Input placeholder="https://youtube.com/xxx" />
+          </Form.Item>
+          <Form.Item
+            label="Link Tik Tok"
+            name={"tiktok"}
+            rules={[general.urlInput as any]}
+          >
+            <Input placeholder="https://tiktok.com/xxx" />
+          </Form.Item>
+          <Space align="end" className="w-full justify-end">
+            <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
+              Save
+            </Button>
+          </Space>
+        </Form>
+      </Col>
+    </Row>
   );
 };
 export default SocialMedia;
