@@ -43,7 +43,7 @@ const AgentsChart = () => {
 
   const options = {
     responsive: true,
-    maintainAspectRatio: false, // Supaya ukuran chart bisa fleksibel
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top" as const,
