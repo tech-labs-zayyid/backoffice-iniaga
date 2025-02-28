@@ -109,17 +109,20 @@ const Banner = () => {
         </Form>
       </Modal>
       {!isMobile && (
-        <Row justify={"end"}>
-          <Button
-            type="primary"
-            icon={<PlusCircleOutlined />}
-            onClick={() =>
-              setFormData({ ...formData, modal: true, action: "add" })
-            }
-          >
-            Add Banner
-          </Button>
-        </Row>
+        <React.Fragment>
+          <Row justify={"end"}>
+            <Button
+              type="primary"
+              icon={<PlusCircleOutlined />}
+              onClick={() =>
+                setFormData({ ...formData, modal: true, action: "add" })
+              }
+            >
+              Add Banner
+            </Button>
+          </Row>
+          <br/>
+        </React.Fragment>
       )}
 
       <MansoryCard
