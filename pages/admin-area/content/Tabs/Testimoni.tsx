@@ -1,17 +1,12 @@
 import React, { useState } from "react";
 import {
   Button,
-  Card,
   Form,
   Input,
   Modal,
-  Select,
   Space,
   Table,
-  Tag,
-  Typography,
   Row,
-  Col,
   Avatar,
   FloatButton,
 } from "antd";

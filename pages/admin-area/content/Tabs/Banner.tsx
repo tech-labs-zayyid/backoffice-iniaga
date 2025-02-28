@@ -1,15 +1,12 @@
 import React, { useState } from "react";
 import {
   Button,
-  Card,
   FloatButton,
   Form,
   Input,
   Modal,
   Row,
   Space,
-  Tooltip,
-  Typography,
 } from "antd";
 import ModalDelete from "../../../../src/components/ModalDelete";
 

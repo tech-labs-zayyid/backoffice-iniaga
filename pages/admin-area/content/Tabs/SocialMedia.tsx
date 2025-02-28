@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Form, Input, Space, Button, Row, Col } from "antd";
 import general from "../../../../src/config/general";
 import { SaveOutlined } from "@ant-design/icons";
@@ -8,14 +8,7 @@ const SocialMedia = () => {
   const { socialMedia, setSocialMedia } = useContentContext();
 
   const [form] = Form.useForm();
-  // const initialState = {
-  //   facebook: "",
-  //   instagram: "",
-  //   twitter: "",
-  //   youtube: "",
-  //   tiktok: "",
-  // };
-  // const [formDataSocialMedia, setFormDataSocialMedia] = useState(initialState);
+
   useEffect(() => {
     form.setFieldsValue(socialMedia);
   }, [form, socialMedia]);

@@ -1,5 +1,5 @@
-import { Button, Col, Form, Image, Input, Row, Space } from "antd";
-import React, { useEffect, useMemo, useState } from "react";
+import { Button, Col, Form,  Input, Row, Space } from "antd";
+import React, { useEffect } from "react";
 import general from "../../../../src/config/general";
 import WidgetUpload from "../../../../src/components/WidgetUpload";
 import { SaveOutlined } from "@ant-design/icons";
