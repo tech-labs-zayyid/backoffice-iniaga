@@ -128,7 +128,7 @@ const Sales = () => {
 
   const options = {
     responsive: true,
-    maintainAspectRatio: false, // Agar chart bisa menyesuaikan ukuran layar
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top" as const,
