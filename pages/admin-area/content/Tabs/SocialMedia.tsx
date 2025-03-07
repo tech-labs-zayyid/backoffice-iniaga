@@ -35,7 +35,7 @@ const SocialMedia = () => {
             rules={[general.urlInput as any]}
           >
             <Input
-              placeholder="https://facebook.com/xxx"
+              placeholder="Ex: https://facebook.com/xxx"
               style={{ width: "100%" }}
             />
           </Form.Item>
@@ -44,28 +44,28 @@ const SocialMedia = () => {
             name={"instagram"}
             rules={[general.urlInput as any]}
           >
-            <Input placeholder="https://instagram.com/xxx" />
+            <Input placeholder="Ex: https://instagram.com/xxx" />
           </Form.Item>
           <Form.Item
             label="Link Twitter"
             name={"twitter"}
             rules={[general.urlInput as any]}
           >
-            <Input placeholder="https://twitter.com/xxx" />
+            <Input placeholder="Ex: https://twitter.com/xxx" />
           </Form.Item>
           <Form.Item
             label="Link Youtube"
             name={"youtube"}
             rules={[general.urlInput as any]}
           >
-            <Input placeholder="https://youtube.com/xxx" />
+            <Input placeholder="Ex: https://youtube.com/xxx" />
           </Form.Item>
           <Form.Item
             label="Link Tik Tok"
             name={"tiktok"}
             rules={[general.urlInput as any]}
           >
-            <Input placeholder="https://tiktok.com/xxx" />
+            <Input placeholder="Ex: https://tiktok.com/xxx" />
           </Form.Item>
           <Space align="end" className="w-full justify-end">
             <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>

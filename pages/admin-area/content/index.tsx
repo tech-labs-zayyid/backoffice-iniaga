@@ -16,6 +16,7 @@ import {
   LinkOutlined,
 } from "@ant-design/icons";
 import { ContentProvider } from "../../../src/context/content";
+import Seo from "./Tabs/Seo";
 const Content = () => {
   const router = useRouter();
   const { query } = router;
@@ -26,6 +27,7 @@ const Content = () => {
     <Testimoni />,
     <Footer />,
     <SocialMedia />,
+    <Seo />,
   ];
   const nav = [
     {
@@ -58,6 +60,11 @@ const Content = () => {
       key: 5,
       icon: <LinkOutlined />,
     },
+    {
+      label: "SEO",
+      key: 6,
+      icon: <LinkOutlined />,
+    },
   ];
   const [activeTab, setActiveTab] = useState(query.tab || "");
   useEffect(() => {
@@ -77,7 +84,7 @@ const Content = () => {
       { shallow: true }
     );
   };
- 
+
   return (
     <ContentProvider>
       <div

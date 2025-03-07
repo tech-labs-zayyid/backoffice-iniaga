@@ -20,9 +20,10 @@ interface ProfileForm {
 interface ContentContextType {
   socialMedia: SocialMediaForm;
   profile: ProfileForm;
-
+  seo: string;
   setSocialMedia: (data: SocialMediaForm) => void;
   setProfile: (data: ProfileForm) => void;
+  setSeo: (data: string) => void;
 }
 
 // Buat default value
@@ -39,8 +40,10 @@ const defaultValues: ContentContextType = {
     image: "",
     description: "",
   },
+  seo: "",
   setSocialMedia: () => {},
   setProfile: () => {},
+  setSeo: () => {},
 };
 
 // Buat context
@@ -52,12 +55,15 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
     defaultValues.socialMedia
   );
   const [profile, setProfile] = useState<ProfileForm>(defaultValues.profile);
+  const [seo, setSeo] = useState<string>("");
 
   return (
     <ContentContext.Provider
       value={{
+        seo,
         socialMedia,
         profile,
+        setSeo,
         setSocialMedia,
         setProfile,
       }}
