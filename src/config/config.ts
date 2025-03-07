@@ -4,14 +4,14 @@ export default {
   profile:
     "https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/man-user-circle-icon.png",
   development: {
-    API_URL: process.env.PUBLIC_NEXT_API_URL || "",
+    API_URL: process.env.NEXT_PUBLIC_API_URL || "",
   },
   production: {
-    API_URL: process.env.PUBLIC_NEXT_API_URL || "",
+    API_URL: process.env.NEXT_PUBLIC_API_URL || "",
   },
 
   baseUrl:
     process.env.NODE_ENV === "production"
-      ? process.env.PUBLIC_NEXT_API_URL || ""
-      : process.env.PUBLIC_NEXT_API_URL || "",
+      ? process.env.NEXT_PUBLIC_API_URL || ""
+      : process.env.NEXT_PUBLIC_API_URL || "",
 };

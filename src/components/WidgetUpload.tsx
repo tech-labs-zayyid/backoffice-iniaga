@@ -3,18 +3,17 @@ import { CldUploadWidget } from "next-cloudinary";
 import { Col, Row, Space, Typography } from "antd";
 
 import { CloudUploadOutlined } from "@ant-design/icons";
-const WidgetUpload = ({ onSuccess, link = "", maxFiles = 1 }) => {
-  const [files, setFiles] = useState([link]);
+const WidgetUpload = ({ onSuccess, link = "", files = [], maxFiles = 1 }) => {
+  // const [files, setFiles] = useState([]);
 
-  useEffect(() => {
-    if(maxFiles>1){
-    setFiles([...files, link]);
+  // useEffect(() => {
+  //   if(maxFiles>1){
+  //   setFiles([...files, link]);
 
-    }else{
-      setFiles([link])
-    }
-  }, [onSuccess]);
-
+  //   }else{
+  //     setFiles([link])
+  //   }
+  // }, [onSuccess]);
 
   return (
     <React.Fragment>
@@ -59,6 +58,18 @@ const WidgetUpload = ({ onSuccess, link = "", maxFiles = 1 }) => {
       </CldUploadWidget>
 
       {link !== "" && (
+        <>
+          <p className="text-sm text-neutral-500 mt-5">Link preview image:</p>
+          <Row>
+            <Col md={24}>
+              <Typography.Link target="_blank" href={link}>
+                {link}
+              </Typography.Link>
+            </Col>
+          </Row>
+        </>
+      )}
+      {files.length > 0 && (
         <>
           <p className="text-sm text-neutral-500 mt-5">Link preview image:</p>
           <Row>

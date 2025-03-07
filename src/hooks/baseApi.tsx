@@ -62,7 +62,7 @@ export async function call({
   const configAxios: AxiosRequestConfig = {
     // baseURL: config[process.env.NODE_ENV].API_URL + subUrl,
     method,
-    url: config[process.env.NODE_ENV].API_URL + subUrl,
+    url: config["development"].API_URL + "/" + subUrl,
     headers: {
       "Content-Type": "application/json",
     },

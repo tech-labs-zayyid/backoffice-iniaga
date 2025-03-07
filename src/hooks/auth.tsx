@@ -11,13 +11,6 @@ interface LoginRequest {
   password: string;
 }
 
-interface UseLoginResult {
-  fetchUser: (data: LoginRequest, onError?: (error: Error) => void) => void;
-  user: UserData | null;
-  isLoading: boolean;
-  isLoadingForgot: boolean;
-}
-
 export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingForgot, setIsLoadingForgot] = useState(false);
@@ -25,63 +18,33 @@ export const useLogin = () => {
   const [modalForgotPassword, setModalForgotPassword] = useState(false);
 
   let source = axios.CancelToken.source(); // Create a cancel token source
-  const dummyUser = {
-    _id: "65c6fe6a8172338e362ebfba",
-    email: "admin@iniaga.com",
-    fullname: "admin",
-    status: "active",
-    created_at: 1707540074,
-    updated_at: 0,
-    deleted_at: 0,
-    role: "admin",
-    token:
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWM2ZmU2YTgxNzIzMzhlMzYyZWJmYmEiLCJlbWFpbCI6ImFkbWluQGhhc2hhbWVkaWthLmNvbSIsImZ1bGxuYW1lIjoiYWRtaW4iLCJzdGF0dXMiOiJhY3RpdmUiLCJjcmVhdGVkX2F0IjoxNzA3NTQwMDc0LCJ1cGRhdGVkX2F0IjowLCJkZWxldGVkX2F0IjowLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3Mzk5Nzg2NzYsImV4cCI6MTc0MDU4MzQ3Nn0.Pxc4LJbRTrSNVhb4Na6X50cwDPY-bzdTBPKYqfth7DY",
-  };
-  const fetchUser = async (
-    data: LoginRequest,
-    onError?: (error: Error) => void
-  ) => {
-    if (!data) return; // Ensure data is not undefined
-    setIsLoading(true);
-
-    try {
-      localStorage.setItem(LOCALSTORAGE.USERDATA, JSON.stringify(dummyUser));
-      setUser(dummyUser);
-    } catch (error) {
-      console.error("Error during login:", error);
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
-        onError?.(axiosError);
-
-        if (axiosError.response) {
-          console.error("Error during login:", axiosError.response.data);
-        } else {
-          console.error("Error during login:", axiosError.message);
-        }
-      } else {
-        console.error("Non-Axios error during login:", error);
-      }
-
-      // Call the onError callback if it was provided
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleLogin = async (data: LoginRequest) => {
+    setIsLoading(true);
     const response = await call({
       method: METHODS.POST,
-      subUrl: `v1/master_data/logs`,
+      subUrl: `user/login`,
       data,
     });
-    return response.data;
+    const datas = response?.data?.data;
+    setIsLoading(false);
+    setUser(datas);
+    localStorage.setItem(
+      LOCALSTORAGE.USERDATA,
+      JSON.stringify({ ...datas, role: "admin" })
+    );
+    return datas;
   };
 
   const handleForgotPassword = async (data) => {};
 
+  const getUser = () => {
+    setUser(JSON.parse(localStorage.getItem(LOCALSTORAGE.USERDATA)));
+  };
+
   return {
+    getUser,
     handleLogin,
-    fetchUser,
     user,
     isLoading,
     isLoadingForgot,

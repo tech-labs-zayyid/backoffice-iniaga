@@ -8,6 +8,9 @@ import {
   Modal,
   Select,
   Space,
+  Row,
+  Col,
+  Checkbox,
 } from "antd";
 
 import {
@@ -22,37 +25,21 @@ import WidgetUpload from "../../../src/components/WidgetUpload";
 import ModalDelete from "../../../src/components/ModalDelete";
 import CKEditor from "react-ckeditor-component";
 import { useGeneralContext } from "../../../src/context/general";
+import { useProducts } from "../../../src/hooks/products";
+import { initialValue } from "../../../src/contants/products";
 
 const Product = () => {
   const { isMobile } = useGeneralContext();
   const [formData, setFormData] = useState({
     modal: false,
     action: "add",
-    payload: { name: "", description: "", image: "", category: "" },
+    payload: initialValue,
   });
-  const [products, setProducts] = useState([
-    {
-      image:
-        "https://res.cloudinary.com/dxjazxzn4/image/upload/v1740324535/ioxuf0ayjb9izrtsa6l1.jpg",
-      name: "Beautiful Sunset",
-      category: "Transportation",
-      description: "A stunning sunset over the ocean.",
-    },
-    {
-      image:
-        "https://res.cloudinary.com/dxjazxzn4/image/upload/v1740324507/qugbfsf7b5nzrjyucjor.jpg",
-      name: "Mountain View",
-      category: "Transportation",
-      description: "A breathtaking view of the mountains.",
-    },
-    {
-      image:
-        "https://res.cloudinary.com/dxjazxzn4/image/upload/v1740324459/zm40pjf9pkkcoerjyiex.jpg",
-      name: "City Lights",
-      category: "Transportation",
-      description: "A dazzling cityscape at night.",
-    },
-  ]);
+  const { products, getProducts, createProducts } = useProducts();
+  useEffect(() => {
+    getProducts();
+  }, []);
+
   const [form] = Form.useForm();
 
   const close = (): void => {
@@ -64,7 +51,7 @@ const Product = () => {
     (formData.modal && formData.action === "add") ||
     formData.action === "detail";
 
-
+  console.log(formData);
   return (
     <React.Fragment>
       <ModalDelete
@@ -75,7 +62,7 @@ const Product = () => {
       {isModalForm && (
         <Modal
           centered
-          width={isMobile?"100vw":"60vw"}
+          width={isMobile ? "100vw" : "60vw"}
           maskClosable={false}
           footer={null}
           onCancel={close}
@@ -83,15 +70,71 @@ const Product = () => {
           title={`Form ${formData.action === "edit" ? "Edit" : "Add"} Product`}
         >
           <Form
-            onFinish={(e) => {}}
+            onFinish={async (e) => {
+              await createProducts({
+                best_product: true,
+                city_id: "12345",
+                description: "This is a great product.",
+                images: [{ image_url: "https://example.com/image.jpg" }],
+                installment: 12,
+                price: 1000000,
+                product_name: "Example Product",
+                product_sub_category: "Electronics",
+                tdp: 500000,
+              });
+            }}
             form={form}
             layout="vertical"
             name="basic"
             autoComplete="off"
           >
-            <Form.Item label="Name" name="name" rules={[general.generalInput]}>
-              <Input />
-            </Form.Item>
+            <Row gutter={[10, 10]}>
+              <Col md={12} xs={24}>
+                <Form.Item
+                  style={{ width: "100%" }}
+                  label={
+                    <Col
+                      md={24}
+                      style={{ border: "1px solid black", width: "100%" }}
+                    >
+                      <Row justify={"space-between"}>
+                        <p>Name</p>
+                        <Checkbox> Best Product ? </Checkbox>
+                      </Row>
+                    </Col>
+                  }
+                  name="product_name"
+                  rules={[general.generalInput]}
+                >
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col md={12} xs={24}>
+                <Form.Item
+                  label="Price"
+                  name="price"
+                  rules={[general.generalInput]}
+                >
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col md={12} xs={24}>
+                <Form.Item
+                  label="Category"
+                  name="product_sub_category"
+                  rules={[general.generalInput]}
+                >
+                  <Select
+                    options={[
+                      { label: "Transportation", value: "transportation" },
+                      { label: "Electronics", value: "electronics" },
+                    ]}
+                  />
+                </Form.Item>
+              </Col>
+              <Col md={12} xs={24}></Col>
+            </Row>
+
             <Form.Item
               label="Description"
               name="description"
@@ -116,15 +159,6 @@ const Product = () => {
             </Form.Item>
 
             <Form.Item
-              label="Category"
-              name="category"
-              rules={[general.generalInput]}
-            >
-              <Select
-                options={[{ label: "Transportation", value: "transportation" }]}
-              />
-            </Form.Item>
-            <Form.Item
               label="Image"
               name="image"
               rules={[general.generalInput]}
@@ -132,13 +166,20 @@ const Product = () => {
               <WidgetUpload
                 maxFiles={3}
                 onSuccess={(response) => {
-                  form.setFieldValue("image", response.info.url);
+                  const urlImage = response.info.url;
+                  form.setFieldValue("image", urlImage);
                   setFormData({
                     ...formData,
-                    payload: { ...formData.payload, image: response.info.url },
+                    payload: {
+                      ...formData.payload,
+                      product_images: [
+                        ...formData?.payload?.product_images,
+                        urlImage,
+                      ],
+                    },
                   });
                 }}
-                link={formData?.payload?.image}
+                files={formData?.payload?.product_images}
               />
             </Form.Item>
 
@@ -176,7 +217,7 @@ const Product = () => {
         }
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {products?.map((item, index) => (
+          {products?.data?.map((item, index) => (
             <div
               key={index}
               className="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105"
@@ -184,18 +225,20 @@ const Product = () => {
               {/* Gambar */}
               <div className="relative">
                 <img
-                  src={item.image}
-                  alt={item.name}
+                  src={item?.product_images?.[0]?.image_url}
+                  alt={item?.product_name}
                   className="w-full h-56 object-cover"
                 />
                 <span className="absolute top-3 left-3 bg-[#FF5733] text-white text-xs font-semibold px-3 py-1 rounded-full">
-                  {item.category}
+                  {item?.product_sub_category}
                 </span>
               </div>
 
               {/* Konten */}
               <div className="p-4">
-                <h3 className="text-lg font-bold text-gray-800">{item.name}</h3>
+                <h3 className="text-lg font-bold text-gray-800">
+                  {item?.product_name}
+                </h3>
                 <p className="text-sm text-gray-600 mt-2">{item.description}</p>
               </div>
 
@@ -242,7 +285,9 @@ const Product = () => {
           icon={<PlusCircleOutlined />}
           type="primary"
           style={{ insetInlineEnd: 24 }}
-          onClick={()=>setFormData({ ...formData, modal: true, action: "add" })}
+          onClick={() =>
+            setFormData({ ...formData, modal: true, action: "add" })
+          }
         />
       )}
     </React.Fragment>
