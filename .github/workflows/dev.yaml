@@ -120,7 +120,7 @@ jobs:
          docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/zayyid/fe-iniaga-bo:latest
         
          echo "Running new container..."
-         docker run -d --name fe-iniaga-home -p 9007:3000 -v $ENV_FILE:/root/.env-iniaga --env-file $ENV_FILE ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/zayyid/fe-iniaga-bo:latest
+         docker run -d --name fe-iniaga-bo -p 9007:3000 -v $ENV_FILE:/root/.env-iniaga-bo --env-file $ENV_FILE ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/zayyid/fe-iniaga-bo:latest
 
          echo "Checking running containers..."
          docker ps -a
