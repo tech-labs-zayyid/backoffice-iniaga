@@ -225,7 +225,7 @@ const Product = () => {
               {/* Gambar */}
               <div className="relative">
                 <img
-                  src={item?.product_images?.[0]?.image_url}
+                  // src={item?.product_images?.[0]?.image_url}
                   alt={item?.product_name}
                   className="w-full h-56 object-cover"
                 />

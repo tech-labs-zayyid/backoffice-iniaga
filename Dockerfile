@@ -1,26 +1,22 @@
-# Use the official Node.js image as the base image
-FROM node:latest
+# 🔹 Stage 1: Build Stage
+FROM node:18-alpine AS builder
+WORKDIR /app/myapp-fe-iniaga
 
-# Set the working directory in the container
-WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install --omit=dev
 
-# Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application code to the working directory
 COPY . .
+RUN npm run build  # Hasil build ada di /app/.next
 
-# Build the Next.js application
-RUN npm run build
+# 🔹 Stage 2: Runtime Stage
+FROM node:18-alpine
+WORKDIR /root/frontend-iniaga/
 
-# Expose the port Next.js runs on
-EXPOSE 3000
+# Copy hanya hasil build
+COPY --from=builder /app/myapp-fe-iniaga/.next .next
+COPY --from=builder /app/myapp-fe-iniaga/package.json .
+COPY --from=builder /app/myapp-fe-iniaga/node_modules node_modules
 
-# Set environment variables
-ENV NODE_ENV=production
-
-# Command to run the application
 CMD ["npm", "start"]
+
+EXPOSE 5000
