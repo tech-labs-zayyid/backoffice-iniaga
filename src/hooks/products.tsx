@@ -22,9 +22,18 @@ export const useProducts = () => {
     return response;
     console.log(response);
   };
+  const putProducts = async (id: string, payload: ProductField) => {
+    const response = await call({
+      method: "PUT",
+      subUrl: `sales/product/${id}`,
+      data: payload,
+    });
+    return response;
+  };
 
   return {
     products: data,
+    putProducts,
     getProducts,
     createProducts,
   };

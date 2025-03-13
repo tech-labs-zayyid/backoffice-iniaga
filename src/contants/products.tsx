@@ -20,6 +20,7 @@ export interface ProductField {
   is_active?: boolean;
   created_at?: string;
   updated_at?: string | null;
+  slug?: string;
   images?: Array<{
     image_url: string;
   }>;
@@ -57,4 +58,5 @@ export const initialValue: ProductField = {
   created_at: "",
   updated_at: null,
   product_images: [],
+  slug: "",
 };

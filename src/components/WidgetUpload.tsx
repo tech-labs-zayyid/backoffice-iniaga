@@ -3,25 +3,32 @@ import { CldUploadWidget } from "next-cloudinary";
 import { Col, Row, Space, Typography } from "antd";
 
 import { CloudUploadOutlined } from "@ant-design/icons";
+import { useRouter } from "next/router";
 const WidgetUpload = ({ onSuccess, link = "", files = [], maxFiles = 1 }) => {
-  // const [files, setFiles] = useState([]);
+  const [tempFiles, setTempFiles] = useState([]);
 
-  // useEffect(() => {
-  //   if(maxFiles>1){
-  //   setFiles([...files, link]);
+  useEffect(() => {
+    setTempFiles(Array.from(new Set([...tempFiles, ...files])));
+  }, [onSuccess]);
 
-  //   }else{
-  //     setFiles([link])
-  //   }
-  // }, [onSuccess]);
+  const router = useRouter();
+  useEffect(() => {
+    localStorage.setItem(
+      `tempFiles_${router.pathname}`,
+      JSON.stringify(tempFiles)
+    );
+  }, [tempFiles]);
 
   return (
     <React.Fragment>
       <CldUploadWidget
-        onSuccess={onSuccess}
+        onSuccess={(res) => {
+          onSuccess(res);
+        }}
         uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_PRESET}
         options={{
           maxFiles,
+          multiple: true,
         }}
       >
         {({ open }) => {
@@ -69,11 +76,11 @@ const WidgetUpload = ({ onSuccess, link = "", files = [], maxFiles = 1 }) => {
           </Row>
         </>
       )}
-      {files.length > 0 && (
+      {tempFiles.length > 0 && (
         <>
           <p className="text-sm text-neutral-500 mt-5">Link preview image:</p>
           <Row>
-            {files
+            {tempFiles
               .filter((v) => v !== "")
               .map((v, index) => {
                 return (

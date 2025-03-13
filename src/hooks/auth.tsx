@@ -28,11 +28,15 @@ export const useLogin = () => {
     });
     const datas = response?.data?.data;
     setIsLoading(false);
-    setUser(datas);
-    localStorage.setItem(
-      LOCALSTORAGE.USERDATA,
-      JSON.stringify({ ...datas, role: "admin" })
-    );
+    if (datas) {
+      setUser(datas);
+      localStorage.setItem(
+        LOCALSTORAGE.USERDATA,
+        JSON.stringify({ ...datas, role: "admin" })
+      );
+    }
+    console.log("datas", datas);
+
     return datas;
   };
 
