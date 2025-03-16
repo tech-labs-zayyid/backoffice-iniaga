@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -19,6 +19,7 @@ import {
   CloseOutlined,
 } from "@ant-design/icons";
 import general from "../../../src/config/general";
+import { useGalleries } from "../../../src/hooks/galleries";
 import WidgetUpload from "../../../src/components/WidgetUpload";
 import MansoryCard from "../../../src/components/MansoryCard";
 import ModalDelete from "../../../src/components/ModalDelete";
@@ -26,6 +27,11 @@ import { useGeneralContext } from "../../../src/context/general";
 
 const Gallery = () => {
   const { isMobile } = useGeneralContext();
+  const { gallery, getGalleries, createGalleries, putGalleries } = useGalleries();
+
+  useEffect(() => {
+    getGalleries();
+  }, []);
 
   const initialState = {
     title: "",
@@ -42,6 +48,8 @@ const Gallery = () => {
     form.resetFields();
     setFormData({ payload: initialState, modal: false, action: "" });
   };
+
+  console.log('gallery ', gallery)
   return (
     <React.Fragment>
       <ModalDelete
