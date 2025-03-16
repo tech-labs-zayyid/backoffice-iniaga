@@ -13,10 +13,12 @@ const nextConfig: NextConfig = {
     appDir: true,
   },
   images: {
+    domains: ["res.cloudinary.com"], // Pastikan domain ini ada
     remotePatterns: [
       {
-        protocol: "https",
+        protocol: "https", // Gunakan "https", bukan "http"
         hostname: "res.cloudinary.com",
+        pathname: "/dxjazxzn4/image/upload/**", // Pastikan path ini benar
       },
     ],
     minimumCacheTTL: 15000000,

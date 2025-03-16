@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Image from 'next/image'
 import { CldUploadWidget } from "next-cloudinary";
 import { Col, Row, Space, Typography } from "antd";
 
@@ -66,9 +67,16 @@ const WidgetUpload = ({ onSuccess, link = "", files = [], maxFiles = 1 }) => {
 
       {link !== "" && (
         <>
-          <p className="text-sm text-neutral-500 mt-5">Link preview image:</p>
+          <p className="text-sm text-neutral-500 my-5">Link preview image:</p>
           <Row>
-            <Col md={24}>
+            <Col md={24} className="flex flex-col items-center align-middle gap-8">
+              <img
+                src={link}
+                className="rounded-xl"
+                alt="uploaded image"
+                width={200}
+                height={200}
+              />
               <Typography.Link target="_blank" href={link}>
                 {link}
               </Typography.Link>
