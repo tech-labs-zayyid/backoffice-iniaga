@@ -8,7 +8,7 @@ interface SocialMediaEntry {
 }
 
 interface SocialMediaForm {
-  [key: string]: SocialMediaEntry;
+  [key: string]: SocialMediaEntry | any;
 }
 
 interface SocialMediaIds {
