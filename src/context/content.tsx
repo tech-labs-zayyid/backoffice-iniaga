@@ -15,19 +15,37 @@ interface SocialMediaIds {
   [key: string]: string;
 }
 
+interface ProfileForm {
+  title: string;
+  image: string;
+  description: string;
+}
+
 interface ContentContextType {
+  profile: ProfileForm;
+  seo: string;
   socialMedia: SocialMediaForm;
   socialMediaIds: SocialMediaIds;
   setSocialMedia: (data: SocialMediaForm) => void;
   fetchSocialMedia: () => Promise<void>;
   submitSocialMedia: (data: SocialMediaForm) => Promise<void>;
   handleToggleActive: (platform: string, isActive: boolean) => Promise<void>;
+  setProfile: (data: ProfileForm) => void;
+  setSeo: (data: string) => void;
 }
 
 const defaultValues: ContentContextType = {
+  profile: {
+    title: "",
+    image: "",
+    description: "",
+  },
+  seo: "",
   socialMedia: {},
   socialMediaIds: {},
   setSocialMedia: () => {},
+  setProfile: () => {},
+  setSeo: () => {},
   fetchSocialMedia: async () => {},
   submitSocialMedia: async () => {},
   handleToggleActive: async () => {},
@@ -38,6 +56,9 @@ const ContentContext = createContext<ContentContextType>(defaultValues);
 export const ContentProvider = ({ children }: { children: ReactNode }) => {
   const [socialMedia, setSocialMedia] = useState<SocialMediaForm>({});
   const [socialMediaIds, setSocialMediaIds] = useState<SocialMediaIds>({});
+
+  const [profile, setProfile] = useState<ProfileForm>(defaultValues.profile);
+  const [seo, setSeo] = useState<string>("");
 
   const fetchSocialMedia = async () => {
     try {
@@ -152,7 +173,18 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-      <ContentContext.Provider value={{ socialMedia, socialMediaIds, setSocialMedia, fetchSocialMedia, submitSocialMedia, handleToggleActive }}>
+      <ContentContext.Provider value={{
+        seo,
+        profile,
+        setSeo,
+        setProfile,
+        socialMedia,
+        socialMediaIds,
+        setSocialMedia,
+        fetchSocialMedia,
+        submitSocialMedia,
+        handleToggleActive
+      }}>
         {children}
       </ContentContext.Provider>
   );

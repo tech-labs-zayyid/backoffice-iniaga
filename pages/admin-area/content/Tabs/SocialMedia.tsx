@@ -5,6 +5,7 @@ import { SaveOutlined } from "@ant-design/icons";
 import { useContentContext } from "../../../../src/context/content";
 
 const { Title } = Typography;
+const socialMediaPlatforms = ["youtube", "facebook", "instagram", "twitter", "tiktok"];
 
 const SocialMedia = () => {
     const { socialMedia, setSocialMedia, submitSocialMedia, handleToggleActive } = useContentContext();
@@ -14,48 +15,47 @@ const SocialMedia = () => {
         if (Object.keys(socialMedia).length > 0) {
             form.setFieldsValue(socialMedia);
         }
-    }, [socialMedia]);
+    }, [socialMedia, form]);
 
-    const handleChange = (_changedValues: any, allValues: any) => {
-        setSocialMedia((prev: SocialMediaForm) => {
-            const updatedData: SocialMediaForm = { ...prev };
-
-            Object.entries(allValues).forEach(([platform, value]) => {
-                updatedData[platform] = {
-                    ...prev[platform],
-                    ...value,
-                    is_active: prev[platform]?.is_active ?? true,
-                };
-            });
-
-            return updatedData;
-        });
+    const handleChange = (changedValues: any, allValues: any) => {
+        const updatedKey = Object.keys(changedValues)[0];
+        setSocialMedia((prev) => ({
+            ...prev,
+            [updatedKey]: {
+                ...prev[updatedKey],
+                ...changedValues[updatedKey],
+                is_active: prev[updatedKey]?.is_active,
+            },
+        }));
     };
 
     const handleSubmit = async (values: any) => {
-        await submitSocialMedia(values);
-    };
+        const sanitizedValues = socialMediaPlatforms.reduce((acc, platform) => {
+            acc[platform] = {
+                ...values[platform],
+                is_active: socialMedia[platform]?.is_active,
+            };
+            return acc;
+        }, {} as Record<string, any>);
 
-    const socialMediaPlatforms = ["youtube", "facebook", "instagram", "twitter", "tiktok"];
+        await submitSocialMedia(sanitizedValues);
+    };
 
     return (
         <Row>
-            <Col md={24}>
+            <Col span={24}>
                 <Form layout="vertical" form={form} onValuesChange={handleChange} onFinish={handleSubmit}>
                     {socialMediaPlatforms.map((platform) => (
                         <div key={platform}>
                             <Title level={4} style={{ marginBottom: 10, textTransform: "capitalize" }}>
                                 {platform}
                             </Title>
-
                             <Form.Item name={[platform, "user_account"]} label="Username">
                                 <Input placeholder={`Ex: username_${platform}`} />
                             </Form.Item>
-
                             <Form.Item name={[platform, "link_embed"]} label="Link" rules={[general.urlInput as any]}>
                                 <Input placeholder={`Ex: https://${platform}.com/xxx`} />
                             </Form.Item>
-
                             {socialMedia[platform]?.is_active !== undefined && (
                                 <Form.Item label="Status">
                                     <Switch
@@ -64,15 +64,11 @@ const SocialMedia = () => {
                                     />
                                 </Form.Item>
                             )}
-
                             <Divider />
                         </div>
                     ))}
-
-                    <Space align="end" className="w-full justify-end">
-                        <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
-                            Save
-                        </Button>
+                    <Space className="w-full justify-end">
+                        <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>Save</Button>
                     </Space>
                 </Form>
             </Col>
