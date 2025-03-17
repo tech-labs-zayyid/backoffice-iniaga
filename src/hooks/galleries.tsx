@@ -22,7 +22,6 @@ export const useGalleries = () => {
       data: payload,
     });
     return response;
-    console.log(response);
   };
 
   const detailGalleries = async (id: string) => {
