@@ -3,8 +3,8 @@ import { Tooltip } from "antd";
 interface GalleryItem {
   id?: string;
   image: string;
-  title?: string;
-  description?: string;
+  title: string;
+  description: string;
 }
 
 interface MasonryCardProps {
@@ -22,7 +22,7 @@ const MansoryCard: React.FC<MasonryCardProps> = ({ data, callback }) => (
         >
           <img
             src={item.image}
-            alt={item.title || "Gallery Image"}
+            alt={item?.title || "Gallery Image"}
             className="w-full h-auto transition-transform duration-300 group-hover:scale-105 rounded-lg"
           />
           {(item.title || item.description) && (

@@ -146,7 +146,7 @@ const Gallery = () => {
           )
         }
       >
-        <MansoryCard data={gallery.map((item) => ({ id: item.id_gallery, image: item.image_url }))} callback={(record) => handleDetail(record.id)} />
+        <MansoryCard data={gallery.map((item) => ({ id: item.id_gallery, image: item.image_url, title: '', description: '' }))} callback={(record) => handleDetail(record.id)} />
       </Card>
 
       {isMobile && <FloatButton icon={<PlusCircleOutlined />} type="primary" style={{ insetInlineEnd: 24 }} onClick={() => setFormData({ modal: true, action: "add", payload: { title: "", description: "", image: "", id_gallery: "", is_active: true } })} />}
