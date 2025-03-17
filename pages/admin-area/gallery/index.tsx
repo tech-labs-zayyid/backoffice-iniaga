@@ -41,7 +41,13 @@ const Gallery = () => {
   const [formData, setFormData] = useState<FormDataState>({
     modal: false,
     action: "",
-    payload: { title: "", description: "", image: "", id_gallery: "", is_active: true }
+    payload: {
+      title: "",
+      description: "",
+      image: "",
+      id_gallery: "",
+      is_active: true
+    }
   });
 
   useEffect(() => {
@@ -50,7 +56,17 @@ const Gallery = () => {
 
   const close = () => {
     form.resetFields();
-    setFormData({ modal: false, action: "", payload: { title: "", description: "", image: "", id_gallery: "", is_active: true } });
+    setFormData({
+      modal: false,
+      action: "",
+      payload: {
+        title: "",
+        description: "",
+        image: "",
+        id_gallery: "",
+        is_active: true
+      }
+    });
   };
 
   const handleSubmit = async (values: any) => {
