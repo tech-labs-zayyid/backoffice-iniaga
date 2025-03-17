@@ -21,7 +21,6 @@ export const useGalleries = () => {
       data: payload,
     });
     return response;
-    console.log(response);
   };
   const putGalleries = async (id: string, payload: ProductField) => {
     const response = await call({
