@@ -15,6 +15,12 @@ interface SocialMediaIds {
   [key: string]: string;
 }
 
+interface BannerForm {
+  description: string;
+  image_url: string;
+  is_active: boolean;
+}
+
 interface ProfileForm {
   title: string;
   image: string;
@@ -23,7 +29,8 @@ interface ProfileForm {
 
 interface ContentContextType {
   profile: ProfileForm;
-  seo: string;
+  seo_description: string;
+  banner: undefined[];
   socialMedia: SocialMediaForm;
   socialMediaIds: SocialMediaIds;
   setSocialMedia: (data: SocialMediaForm) => void;
@@ -31,7 +38,11 @@ interface ContentContextType {
   submitSocialMedia: (data: SocialMediaForm) => Promise<void>;
   handleToggleActive: (platform: string, isActive: boolean) => Promise<void>;
   setProfile: (data: ProfileForm) => void;
-  setSeo: (data: string) => void;
+  setSeoDescription: (data: string) => void;
+  createSEO: (data: any) => void;
+  createBanner: (data: any) => void
+  detailBanner: (id: string) => void
+  putBanner: (id: string, data: BannerForm) => void
 }
 
 const defaultValues: ContentContextType = {
@@ -40,15 +51,20 @@ const defaultValues: ContentContextType = {
     image: "",
     description: "",
   },
-  seo: "",
+  seo_description: "",
+  banner: [],
   socialMedia: {},
   socialMediaIds: {},
   setSocialMedia: () => {},
   setProfile: () => {},
-  setSeo: () => {},
+  setSeoDescription: () => {},
   fetchSocialMedia: async () => {},
   submitSocialMedia: async () => {},
   handleToggleActive: async () => {},
+  createSEO: async () => {},
+  createBanner: async () => {},
+  detailBanner: async () => {},
+  putBanner: async () => {}
 };
 
 const ContentContext = createContext<ContentContextType>(defaultValues);
@@ -56,9 +72,10 @@ const ContentContext = createContext<ContentContextType>(defaultValues);
 export const ContentProvider = ({ children }: { children: ReactNode }) => {
   const [socialMedia, setSocialMedia] = useState<SocialMediaForm>({});
   const [socialMediaIds, setSocialMediaIds] = useState<SocialMediaIds>({});
+  const [banner, setBanner] = useState<any[]>([])
 
   const [profile, setProfile] = useState<ProfileForm>(defaultValues.profile);
-  const [seo, setSeo] = useState<string>("");
+  const [seo_description, setSeoDescription] = useState<string>("");
 
   const fetchSocialMedia = async () => {
     try {
@@ -168,22 +185,85 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const fetchBanner = async () => {
+    const response = await call({
+      method: "GET",
+      subUrl: "sales/banner",
+    });
+    setBanner(response?.data?.data?.data_list || [])
+  };
+
+  const detailBanner = async (id: string) => {
+    const response = await call({
+      method: "GET",
+      subUrl: `sales/banner/${id}`
+    });
+    return response?.data.code === 200 ? response?.data?.data : { id: '', image: '' } ;
+  };
+
+  const putBanner = async (id: string, payload: BannerForm) => {
+    const response = await call({
+      method: "PUT",
+      subUrl: `sales/banner/${id}`,
+      data: payload,
+    });
+    if (response?.status === 200) fetchBanner()
+
+    return response;
+  };
+
+  const createBanner = async (data: any) => {
+    const response = await call({
+      method: "POST",
+      subUrl: "sales/banner",
+      data
+    });
+    if (response?.status === 200) fetchBanner()
+
+    return response
+  };
+
+  const fetchSEO = async () => {
+    const response = await call({
+      method: "GET",
+      subUrl: "sales/seo-config",
+    });
+
+    return response
+  };
+
+  const createSEO = async (data: any) => {
+    const response = await call({
+      method: "POST",
+      subUrl: "sales/seo-config",
+      data
+    });
+    return response
+  };
+
   useEffect(() => {
+    fetchBanner();
     fetchSocialMedia();
+    fetchSEO()
   }, []);
 
   return (
       <ContentContext.Provider value={{
-        seo,
+        seo_description,
         profile,
-        setSeo,
+        banner,
+        setSeoDescription,
         setProfile,
         socialMedia,
         socialMediaIds,
         setSocialMedia,
         fetchSocialMedia,
         submitSocialMedia,
-        handleToggleActive
+        handleToggleActive,
+        createSEO,
+        createBanner,
+        detailBanner,
+        putBanner
       }}>
         {children}
       </ContentContext.Provider>
