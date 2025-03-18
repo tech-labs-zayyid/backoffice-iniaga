@@ -12,6 +12,7 @@ import {
   Col,
   Checkbox,
   Switch,
+  Spin,
 } from "antd";
 
 import {
@@ -58,6 +59,7 @@ const Product = () => {
     (formData.modal && formData.action === "add") ||
     formData.action === "detail";
 
+  const [loading, setLoading] = useState(false);
   return (
     <React.Fragment>
       <ModalDelete
@@ -75,87 +77,109 @@ const Product = () => {
           open={isModalForm}
           title={`Form ${formData.action === "edit" ? "Edit" : "Add"} Product`}
         >
-          <Form
-            onFinish={async (e) => {
-              if (formData.action === "add") {
-                const payload = {
-                  best_product: e?.best_product || false,
-                  city_id: "",
-                  description: e?.description || "",
-                  images:
-                    JSON.parse(localStorage.getItem(tempFileName))?.map((v) => {
-                      return { image_url: v };
-                    }) || [],
-                  installment: parseFloat(e?.installment || 0),
-                  price: parseFloat(e?.price || 0),
-                  product_name: e.product_name,
-                  product_sub_category: e?.product_sub_category,
-                  tdp: parseFloat(e?.tdp || 0),
-                };
-                await createProducts(payload);
-                close();
-              } else {
-                const payload = {
-                  best_product: e?.best_product || false,
-                  city_id: "",
-                  description: e?.description || "",
-                  id_description: formData?.payload?.id_description,
-                  images:
-                    JSON.parse(localStorage.getItem(tempFileName))?.map((v) => {
-                      return { image_url: v, is_active: true };
-                    }) || [],
-                  is_active: e?.is_active || true,
-                  installment: parseFloat(e?.installment || 0),
-                  price: parseFloat(e?.price || 0),
-                  product_name: e?.product_name || "",
-                  product_sub_category: e?.product_sub_category || "",
-                  slug: formData?.payload?.slug,
-                  status: formData?.payload?.status,
-                  tdp: formData?.payload?.tdp || 0,
-                };
-                await putProducts(formData?.payload?.id_product, payload);
-              }
-            }}
-            form={form}
-            layout="vertical"
-            name="basic"
-            autoComplete="off"
-          >
-            <Row gutter={[10, 10]}>
-              <Col md={12} xs={24}>
-                <Form.Item
-                  style={{ width: "100%" }}
-                  label="Name"
-                  name="product_name"
-                  rules={[general.generalInput]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col md={12} xs={24}>
-                <Form.Item
-                  label="Category"
-                  name="product_sub_category"
-                  rules={[general.generalInput]}
-                >
-                  <Select
-                    options={[
-                      { label: "Transportation", value: "transportation" },
-                      { label: "Electronics", value: "electronics" },
-                    ]}
-                  />
-                </Form.Item>
-              </Col>
-              <Col md={12} xs={24}>
-                <Form.Item
-                  label="Price"
-                  name="price"
-                  rules={[general.numberInput]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-              {/* <Col md={6} xs={24}>
+          <Spin spinning={loading}>
+            <Form
+              onFinish={async (e) => {
+                setLoading(true);
+                if (formData.action === "add") {
+                  const payload = {
+                    best_product: e?.best_product || false,
+                    city_id: "",
+                    description: e?.description || "",
+                    images:
+                      JSON.parse(localStorage.getItem(tempFileName))?.map(
+                        (v) => {
+                          return { image_url: v };
+                        }
+                      ) || [],
+                    installment: parseFloat(e?.installment || 0),
+                    price: parseFloat(e?.price || 0),
+                    product_name: e.product_name,
+                    product_sub_category: e?.product_sub_category,
+                    tdp: parseFloat(e?.tdp || 0),
+                  };
+                  const res = await createProducts(payload);
+                  if (res) {
+                    close();
+                  }
+                  setLoading(false);
+                } else {
+                  const payload = {
+                    best_product: e?.best_product || false,
+                    city_id: "",
+                    description: e?.description || "",
+                    id_description: formData?.payload?.id_description,
+                    images:
+                      JSON.parse(localStorage.getItem(tempFileName))?.map(
+                        (v, i) => {
+                          return {
+                            image_url: v,
+                            is_active: true,
+                            product_image_id:
+                              formData?.payload?.clone_images?.[i]
+                                ?.product_image_id || "",
+                          };
+                        }
+                      ) || [],
+                    is_active: e?.is_active || true,
+                    installment: parseFloat(e?.installment || 0),
+                    price: parseFloat(e?.price || 0),
+                    product_name: e?.product_name || "",
+                    product_sub_category: e?.product_sub_category || "",
+                    slug: formData?.payload?.slug,
+                    status: formData?.payload?.status,
+                    tdp: formData?.payload?.tdp || 0,
+                  };
+                  const res = await putProducts(
+                    formData?.payload?.id_product,
+                    payload
+                  );
+                  if (res) {
+                    close();
+                  }
+                  setLoading(false);
+                }
+              }}
+              form={form}
+              layout="vertical"
+              name="basic"
+              autoComplete="off"
+            >
+              <Row gutter={[10, 10]}>
+                <Col md={12} xs={24}>
+                  <Form.Item
+                    style={{ width: "100%" }}
+                    label="Name"
+                    name="product_name"
+                    rules={[general.generalInput]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col md={12} xs={24}>
+                  <Form.Item
+                    label="Category"
+                    name="product_sub_category"
+                    rules={[general.generalInput]}
+                  >
+                    <Select
+                      options={[
+                        { label: "Transportation", value: "transportation" },
+                        { label: "Electronics", value: "electronics" },
+                      ]}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col md={12} xs={24}>
+                  <Form.Item
+                    label="Price"
+                    name="price"
+                    rules={[general.numberInput]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                {/* <Col md={6} xs={24}>
                 <Form.Item
                   label="Installment"
                   name="installment"
@@ -169,96 +193,101 @@ const Product = () => {
                   <Input />
                 </Form.Item>
               </Col> */}
-              <Col md={12} xs={24}>
-                <Form.Item
-                  label="Best Product"
-                  name="best_product"
-                  rules={[general.generalInput]}
-                >
-                  <Select
-                    options={[
-                      { label: "Active", value: true },
-                      { label: "Non Active ", value: false },
-                    ]}
-                  />
-                </Form.Item>
-              </Col>
+                <Col md={12} xs={24}>
+                  <Form.Item
+                    label="Best Product"
+                    name="best_product"
+                    rules={[general.generalInput]}
+                  >
+                    <Select
+                      options={[
+                        { label: "Active", value: true },
+                        { label: "Non Active ", value: false },
+                      ]}
+                    />
+                  </Form.Item>
+                </Col>
 
-              {/* <Col md={12} xs={24}></Col> */}
-            </Row>
+                {/* <Col md={12} xs={24}></Col> */}
+              </Row>
 
-            <Form.Item
-              label="Description"
-              name="description"
-              rules={[general.generalInput]}
-            >
-              <CKEditor
-                activeClass="p10"
-                content={formData?.payload?.description}
-                events={{
-                  blur: (e) => {},
-                  afterPaste: (e) => {},
-                  change: (e) => {
-                    const data = e.editor.getData();
+              <Form.Item
+                label="Description"
+                name="description"
+                rules={[general.generalInput]}
+              >
+                <CKEditor
+                  activeClass="p10"
+                  content={formData?.payload?.description}
+                  events={{
+                    blur: (e) => {},
+                    afterPaste: (e) => {},
+                    change: (e) => {
+                      const data = e.editor.getData();
+                      setFormData({
+                        ...formData,
+                        payload: { ...formData.payload, description: data },
+                      });
+                      form.setFieldValue("description", data);
+                    },
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="Image"
+                name="image"
+                rules={[general.generalInput]}
+              >
+                <WidgetUpload
+                  files={formData?.payload?.product_images}
+                  maxFiles={1}
+                  onSuccess={(response) => {
+                    const urlImage = response.info.url;
+                    form.setFieldValue("image", urlImage);
                     setFormData({
                       ...formData,
-                      payload: { ...formData.payload, description: data },
+                      payload: {
+                        ...formData.payload,
+                        product_images: [
+                          ...formData.payload.product_images,
+                          urlImage,
+                        ],
+                      },
                     });
-                    form.setFieldValue("description", data);
-                  },
-                }}
-              />
-            </Form.Item>
+                  }}
+                />
+              </Form.Item>
 
-            <Form.Item
-              label="Image"
-              name="image"
-              rules={[general.generalInput]}
-            >
-              <WidgetUpload
-                files={formData?.payload?.product_images}
-                maxFiles={1}
-                onSuccess={(response) => {
-                  const urlImage = response.info.url;
-                  form.setFieldValue("image", urlImage);
-                  setFormData({
-                    ...formData,
-                    payload: {
-                      ...formData.payload,
-                      product_images: [
-                        ...formData.payload.product_images,
-                        urlImage,
-                      ],
-                    },
-                  });
-                }}
-              />
-            </Form.Item>
+              <Form.Item label="Status" name={"is_active"}>
+                <Switch
+                  disabled={formData?.action === "add"}
+                  defaultChecked={formData?.payload?.is_active || true}
+                  checkedChildren="Active"
+                  unCheckedChildren="Inactive"
+                />
+              </Form.Item>
 
-            <Form.Item label="Status" name={"is_active"}>
-              <Switch
-                disabled={formData?.action === "add"}
-                defaultChecked={formData?.payload?.is_active || true}
-                checkedChildren="Active"
-                unCheckedChildren="Inactive"
-              />
-            </Form.Item>
+              <Space align="end" className="w-full justify-end mt-5">
+                <Button
+                  type="default"
+                  htmlType="button"
+                  onClick={close}
+                  icon={<CloseOutlined />}
+                >
+                  Cancel
+                </Button>
 
-            <Space align="end" className="w-full justify-end mt-5">
-              <Button
-                type="default"
-                htmlType="button"
-                onClick={close}
-                icon={<CloseOutlined />}
-              >
-                Cancel
-              </Button>
-
-              <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
-                Save
-              </Button>
-            </Space>
-          </Form>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  icon={<SaveOutlined />}
+                >
+                  Save
+                </Button>
+              </Space>
+            </Form>
+          </Spin>
         </Modal>
       )}
       <Card
@@ -314,13 +343,16 @@ const Product = () => {
                     onClick={() => {
                       // console.log(item);
                       // return;
+                      Object.assign(item, { image: "image" });
                       form.setFieldsValue(item);
+                      console.log(item);
                       setFormData({
                         ...formData,
                         modal: true,
                         action: "detail",
                         payload: {
                           ...item,
+                          clone_images: item?.product_images,
                           product_images: item?.product_images?.map(
                             (item: any) => item?.image_url
                           ),
