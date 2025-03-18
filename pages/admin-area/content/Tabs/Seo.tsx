@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import { Form, Input, Space, Button, Row, Col } from "antd";
-import general from "../../../../src/config/general";
 import { SaveOutlined } from "@ant-design/icons";
+import general from "../../../../src/config/general";
 import { useContentContext } from "../../../../src/context/content";
 import { useGeneralContext } from "../../../../src/context/general";
+
 const Seo = () => {
   const { seo, setSeo } = useContentContext();
 
@@ -12,13 +13,17 @@ const Seo = () => {
   useEffect(() => {
     form.setFieldsValue(seo);
   }, [form, seo]);
+
   const handleChange = (changedValues: any, allValues: any) => {
     setSeo(allValues);
   };
+
   const handleSubmit = (values: any) => {
     console.log("Form Data Submitted:", values);
   };
+
   const { isMobile } = useGeneralContext();
+
   return (
     <Row>
       <Col md={24}>
@@ -49,4 +54,5 @@ const Seo = () => {
     </Row>
   );
 };
+
 export default Seo;

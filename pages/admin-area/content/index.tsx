@@ -1,68 +1,53 @@
-import { Card, Col, Row, Tabs } from "antd";
+import { Col, Row, Tabs } from "antd";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Navbar from "./Tabs/Nabvar";
 import Banner from "./Tabs/Banner";
 import Profile from "./Tabs/Profile";
 import Testimoni from "./Tabs/Testimoni";
-import Footer from "./Tabs/Footer";
 import SocialMedia from "./Tabs/SocialMedia";
+import Seo from "./Tabs/Seo";
 import {
-  MenuOutlined,
   SolutionOutlined,
   StarOutlined,
-  NumberOutlined,
   ExpandOutlined,
   LinkOutlined,
 } from "@ant-design/icons";
 import { ContentProvider } from "../../../src/context/content";
-import Seo from "./Tabs/Seo";
+
 const Content = () => {
   const router = useRouter();
   const { query } = router;
   const tabComponent = [
-    <Navbar />,
     <Banner />,
     <Profile />,
     <Testimoni />,
-    <Footer />,
     <SocialMedia />,
     <Seo />,
   ];
   const nav = [
     {
-      label: "Navbar",
-      key: 0,
-      icon: <MenuOutlined />,
-    },
-    {
       label: "Banner",
-      key: 1,
+      key: 0,
       icon: <ExpandOutlined />,
     },
     {
       label: "Profile",
-      key: 2,
+      key: 1,
       icon: <SolutionOutlined />,
     },
     {
       label: "Testimoni",
-      key: 3,
+      key: 2,
       icon: <StarOutlined />,
     },
     {
-      label: "Footer",
-      key: 4,
-      icon: <NumberOutlined />,
-    },
-    {
       label: "Social Media",
-      key: 5,
+      key: 3,
       icon: <LinkOutlined />,
     },
     {
       label: "SEO",
-      key: 6,
+      key: 4,
       icon: <LinkOutlined />,
     },
   ];

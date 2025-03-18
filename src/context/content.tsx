@@ -168,8 +168,21 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const fetchSEO = async () => {
+    try {
+      const response = await call({
+        method: "GET",
+        subUrl: "sales/seo-config",
+      });
+      console.log('response: ', response)
+    } catch (error) {
+      console.error("Error fetching social media:", error);
+    }
+  };
+
   useEffect(() => {
     fetchSocialMedia();
+    fetchSEO()
   }, []);
 
   return (
