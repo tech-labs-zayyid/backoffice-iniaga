@@ -23,7 +23,7 @@ interface ProfileForm {
 
 interface ContentContextType {
   profile: ProfileForm;
-  seo: string;
+  seo_description: string;
   socialMedia: SocialMediaForm;
   socialMediaIds: SocialMediaIds;
   setSocialMedia: (data: SocialMediaForm) => void;
@@ -31,7 +31,8 @@ interface ContentContextType {
   submitSocialMedia: (data: SocialMediaForm) => Promise<void>;
   handleToggleActive: (platform: string, isActive: boolean) => Promise<void>;
   setProfile: (data: ProfileForm) => void;
-  setSeo: (data: string) => void;
+  setSeoDescription: (data: string) => void;
+  updateSeoDescription: (data: any) => void;
 }
 
 const defaultValues: ContentContextType = {
@@ -40,15 +41,16 @@ const defaultValues: ContentContextType = {
     image: "",
     description: "",
   },
-  seo: "",
+  seo_description: "",
   socialMedia: {},
   socialMediaIds: {},
   setSocialMedia: () => {},
   setProfile: () => {},
-  setSeo: () => {},
+  setSeoDescription: () => {},
   fetchSocialMedia: async () => {},
   submitSocialMedia: async () => {},
   handleToggleActive: async () => {},
+  updateSeoDescription: async () => {}
 };
 
 const ContentContext = createContext<ContentContextType>(defaultValues);
@@ -58,7 +60,7 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
   const [socialMediaIds, setSocialMediaIds] = useState<SocialMediaIds>({});
 
   const [profile, setProfile] = useState<ProfileForm>(defaultValues.profile);
-  const [seo, setSeo] = useState<string>("");
+  const [seo_description, setSeoDescription] = useState<string>("");
 
   const fetchSocialMedia = async () => {
     try {
@@ -180,6 +182,19 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const updateSeoDescription = async (data: any) => {
+    try {
+      const response = await call({
+        method: "POST",
+        subUrl: "sales/seo-config",
+        data
+      });
+      return response
+    } catch (_: any) {
+      return false
+    }
+  }
+
   useEffect(() => {
     fetchSocialMedia();
     fetchSEO()
@@ -187,16 +202,17 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
 
   return (
       <ContentContext.Provider value={{
-        seo,
+        seo_description,
         profile,
-        setSeo,
+        setSeoDescription,
         setProfile,
         socialMedia,
         socialMediaIds,
         setSocialMedia,
         fetchSocialMedia,
         submitSocialMedia,
-        handleToggleActive
+        handleToggleActive,
+        updateSeoDescription
       }}>
         {children}
       </ContentContext.Provider>
