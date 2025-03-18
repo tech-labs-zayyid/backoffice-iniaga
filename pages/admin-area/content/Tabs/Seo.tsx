@@ -8,7 +8,7 @@ import { useContentContext } from "../../../../src/context/content";
 import { useGeneralContext } from "../../../../src/context/general";
 
 const Seo = () => {
-  const { seo_description, setSeoDescription, updateSeoDescription } = useContentContext();
+  const { seo_description, setSeoDescription, createSEO } = useContentContext();
   const { isMobile } = useGeneralContext();
 
   const [form] = Form.useForm();
@@ -29,7 +29,7 @@ const Seo = () => {
       const token = getCookie("token");
       const payload = { ...values, public_access: "", product_id: decodeToken(token)?.product_id };
 
-      const response = await updateSeoDescription(payload);
+      const response = await createSEO(payload);
       console.log('response: ', response)
       notification.success({
         message: "Success",
