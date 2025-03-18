@@ -49,7 +49,7 @@ const Banner = () => {
     const values = form.getFieldsValue();
     const payload = {
       data_banner: values.banners.map((banner: any) => {
-        let data = {
+        let data: any = {
           description: banner.description || "",
           image_url: banner.image || "",
         };
@@ -86,8 +86,7 @@ const Banner = () => {
   const handleDetail = async (id: string) => {
     setLoading(true);
     try {
-      const response = await detailBanner(id);
-      console.log('response detail: ', response);
+      const response: any = await detailBanner(id);
   
       form.setFieldsValue({
         banners: [{
@@ -116,13 +115,13 @@ const Banner = () => {
   };  
 
   const addBanner = () => {
-    setFormData((prev) => ({
+    setFormData((prev: any) => ({
       ...prev,
       banners: [...prev.banners, { id: Date.now(), description: "", image: "", is_active: true }],
     }));
   };
 
-  const removeBanner = (id: number) => {
+  const removeBanner = (id: string) => {
     setFormData((prev) => ({
       ...prev,
       banners: prev.banners.filter((banner) => banner.id !== id),
@@ -211,7 +210,7 @@ const Banner = () => {
       >
         <List
           dataSource={banner}
-          renderItem={(item) => (
+          renderItem={(item: undefined | any) => (
             <List.Item key={item.id_banner}>
               <Card hoverable onClick={() => handleDetail(item.id_banner)}>
                 <AntdImage src={item.image_url} alt="Banner" width={150} preview={false} />
