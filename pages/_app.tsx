@@ -1,7 +1,6 @@
 import { AppProps } from "next/app";
 import "../global/global.css";
 import Head from "next/head";
-import { Toaster } from "react-hot-toast";
 import NProgress from "nprogress";
 import Router from "next/router";
 import "nprogress/nprogress.css"; //styles of nprogress
@@ -14,6 +13,7 @@ import {
 import { LOCALSTORAGE } from "../src/contants/localstorage";
 import AdminLayout from "./admin-area/Layout";
 import config from "../src/config/config";
+import { GeneralProvider } from "../src/context/general";
 
 function MyApp({ Component, pageProps, router }: AppProps) {
   // Set up NProgress
@@ -32,7 +32,7 @@ function MyApp({ Component, pageProps, router }: AppProps) {
       deviceType === "mobile" ? "1" : "0"
     );
   }, []);
-  const path = Router?.router?.state?.pathname?.split("/") || "";
+const path = router.pathname.split("/") || "";
   const isPageLogin = router.pathname.startsWith("/login");
 
   return (
@@ -42,11 +42,20 @@ function MyApp({ Component, pageProps, router }: AppProps) {
         <meta name="keywords" content="titla, meta, nextjs" />
         <meta name="author" content="Syamlal CM" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
         <link rel="icon" href={config.favicon} />
         <title>{path?.[2] || path?.[1]}</title>
       </Head>
-      <Toaster position="top-right" />
-      {isPageLogin? <Component {...pageProps} /> : <AdminLayout ><Component {...pageProps} /></AdminLayout>}
+
+      {isPageLogin ? (
+        <Component {...pageProps} />
+      ) : (
+        <GeneralProvider>
+          <AdminLayout>
+            <Component {...pageProps} />
+          </AdminLayout>
+        </GeneralProvider>
+      )}
     </div>
   );
 }

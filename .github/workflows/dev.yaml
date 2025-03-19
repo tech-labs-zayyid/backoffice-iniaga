@@ -1,0 +1,130 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Cache Docker layers
+      uses: actions/cache@v4
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
+    - name: Set up AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+      with:
+        driver: docker
+
+    - name: Build Docker Image
+      run: |
+        docker buildx build --no-cache \
+          --cache-from=type=local,src=/tmp/.buildx-cache \
+          --cache-to=type=local,dest=/tmp/.buildx-cache \
+          -t myapp-fe-iniaga-bo \
+          --load \
+          --progress=plain \
+          .
+
+    - name: Log in to Amazon ECR
+      run: |
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+    - name: Verify Docker Image
+      run: docker images | grep myapp-fe-iniaga-bo
+
+    - name: Tag Docker image
+      run: |
+        IMAGE_TAG=${{ github.sha }}
+        docker tag myapp-fe-iniaga-bo:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/zayyid/fe-iniaga-bo:$IMAGE_TAG
+        docker tag myapp-fe-iniaga-bo:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/zayyid/fe-iniaga-bo:latest
+
+    - name: Push Docker image to ECR
+      run: |
+        docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/zayyid/fe-iniaga-bo
+
+  deploy:
+   needs: build
+   runs-on: ubuntu-latest
+
+   steps:
+   - name: SSH into EC2 and Deploy
+     uses: appleboy/ssh-action@master
+     with:
+       host: ${{ secrets.EC2_HOST }}
+       username: ${{ secrets.EC2_USER }}
+       key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+       script: |
+         echo "Creating .env file on EC2..."
+         
+         APP_DIR="$(pwd)/var/www/zayyid/fe"
+         ENV_FILE="$APP_DIR/.env-iniaga-bo"
+         
+         echo "$APP_DIR, $ENV_FILE"
+         
+         sudo mkdir -p $APP_DIR
+         sudo chown -R $(whoami):$(whoami) $APP_DIR
+         sudo chmod 755 $APP_DIR
+         
+         if [ ! -w $APP_DIR ]; then
+           echo "⚠️ ERROR: permission denied $APP_DIR"
+           exit 1
+         fi
+         
+         cat <<EOF > $ENV_FILE
+         ENV=${{ secrets.ENV }}
+         EOF
+         
+         sudo chmod 600 $ENV_FILE
+         sudo chown $(whoami):$(whoami) $ENV_FILE
+
+         echo "Verifying .env file..."
+         ls -lah $ENV_FILE || { echo ".env file not found!"; exit 1; }
+         
+         echo "✅ .env file successfully created and secured!"
+
+         echo "Logging into AWS..."
+         aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+        
+         echo "Stopping old container..."
+         if [ "$(docker ps -q -f name=fe-iniaga-bo)" ]; then
+           docker stop fe-iniaga-bo
+           docker rm fe-iniaga-bo
+         else
+           echo "No existing container found"
+         fi
+
+         echo "Pulling new image..."
+         docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/zayyid/fe-iniaga-bo:latest
+        
+         echo "Running new container..."
+         docker run -d --name fe-iniaga-bo -p 9007:3000 -v $ENV_FILE:/root/.env-iniaga-bo --env-file $ENV_FILE ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/zayyid/fe-iniaga-bo:latest
+
+         echo "Checking running containers..."
+         docker ps -a
+
+         echo "Cleanup old Docker images..."
+         docker system prune -f
+

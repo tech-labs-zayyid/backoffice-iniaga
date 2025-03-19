@@ -8,17 +8,17 @@ const Login: React.FC = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    // if (getCookie("token") !== undefined) {
-    //   setLoading(true);
-    //   message.info("anda sudah melakukan login").then(() => {
-    //     router.push("/").then(() => setLoading(false));
-    //   });
-    // }
+    if (getCookie("token") !== undefined) {
+      setLoading(true);
+      message.info("anda sudah melakukan login").then(() => {
+        router.push("/").then(() => setLoading(false));
+      });
+    }
   }, []);
   return (
     <div>
       <Head>
-        <title>Hasha Medika - Login</title>
+        <title>Iniaga - Login</title>
         <meta
           name="description"
           content="Encourage Parents, helping children"

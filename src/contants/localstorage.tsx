@@ -1,4 +1,4 @@
 export const LOCALSTORAGE = {
-  USERDATA: "userData",
+  USERDATA: "user",
   ISMOBILE: "isMobile",
 };

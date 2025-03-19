@@ -1,19 +1,37 @@
 export interface UserData {
-  _id: string;
+  id: string;
+  username: string;
+  name: string;
+  whatsapp_number: string;
   email: string;
-  fullname: string;
-  phone_number: string;
   role: string;
-  status: string;
-  verified: number;
-  created_at: number;
-  updated_at: number;
-  deleted_at: number;
-  token: string;
+  image_url: string;
+  referal_code: string;
+  created_at: string;
+  created_by: string;
+  token_data: {
+    token: string;
+    refresh_token: string;
+  };
 }
 
 export interface LoginResponse {
   status: string;
   message: string;
-  data: UserData;
+  data: {
+    id: string;
+    username: string;
+    name: string;
+    whatsapp_number: string;
+    email: string;
+    role: string;
+    image_url: string;
+    referal_code: string;
+    created_at: string;
+    created_by: string;
+    token_data: {
+      token: string;
+      refresh_token: string;
+    };
+  };
 }

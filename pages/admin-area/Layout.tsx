@@ -5,11 +5,10 @@ import {
   UserOutlined,
   LogoutOutlined,
   HomeOutlined,
-  DashboardOutlined,
-  GlobalOutlined,
-  ProductOutlined,
-  FileImageOutlined,
 } from "@ant-design/icons";
+
+import * as Icons from "@ant-design/icons";
+
 import {
   Layout,
   Menu,
@@ -31,61 +30,28 @@ import Head from "next/head";
 import UAParser from "ua-parser-js";
 import { deleteCookie, hasCookie } from "cookies-next";
 import { LOCALSTORAGE } from "../../src/contants/localstorage";
-import type { MenuProps } from "antd";
+import general from "../../src/config/general";
 
-const AdminLayout = ({children}) => {
-  const [isMobile, setIsMobile] = useState(false);
+import type { MenuProps } from "antd";
+import { GeneralProvider, useGeneralContext } from "../../src/context/general";
+import { useLogin } from "../../src/hooks/auth";
+
+const getAntIcon = (iconName: string) => {
+  const IconComponent = (Icons as any)[iconName];
+  return IconComponent ? React.createElement(IconComponent) : null;
+};
+const AdminLayout = ({ children }) => {
+  const { isMobile, setIsMobile } = useGeneralContext();
+
   const [loading, setLoading] = useState(false);
   const [activeMenu, setActiveMenu] = useState([]);
-  useEffect(() => {
-    const parser = new UAParser();
-    const result = parser.getResult();
-    const deviceType = result.device.type;
-    setIsMobile(deviceType === "mobile");
-    setCollapsed(deviceType === "mobile");
-  }, []);
 
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
 
-  const menuSidebar = [
-    {
-      icon: <DashboardOutlined />,
-      label: "Dashboard",
-      link: "dashboard",
-    },
-    {
-      icon: <ProductOutlined />,
-      label: "Product",
-      link: "product",
-    },
-    {
-      icon: <FileImageOutlined />,
-      label: "Gallery",
-      link: "gallery",
-    },
-    {
-      icon: <UserOutlined />,
-      label: "Agent",
-      link: "Agent",
-    },
-    {
-      icon: <GlobalOutlined />,
-      label: "Content",
-      link: "content",
-    },
-  ];
-
-  useEffect(() => {
-    if (!hasCookie("token")) {
-      router.push("/login");
-    }
-    let newActiveMenu = menuSidebar.findIndex(
-      (v) => v.link === router.pathname.split("/")[2]
-    );
-
-    setActiveMenu([`${newActiveMenu}`]);
-  }, [router.pathname]);
+  const menuSidebar = general.sidebar;
+  const { user, getUser } = useLogin();
+  useEffect(() => {}, [router]);
 
   const objectMenuActive = menuSidebar.find(
     (v, key) => key === Number(activeMenu[0])
@@ -95,10 +61,12 @@ const AdminLayout = ({children}) => {
       key: "1",
       label: (
         <Space>
-          <UserOutlined /> admin@zayyid.com
+          <UserOutlined />
+          {user?.email}
         </Space>
       ),
     },
+
     {
       key: "2",
       label: (
@@ -116,6 +84,20 @@ const AdminLayout = ({children}) => {
       },
     },
   ];
+
+  useEffect(() => {
+    if (!hasCookie("token")) {
+      router.push("/login");
+    }
+    let newActiveMenu = menuSidebar.findIndex((v) =>
+      v.link.includes(router.pathname.split("/")[2])
+    );
+
+    setActiveMenu([`${newActiveMenu}`]);
+    isMobile && setCollapsed(true);
+    getUser();
+  }, [router]);
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       {!collapsed && (
@@ -180,7 +162,7 @@ const AdminLayout = ({children}) => {
                     router.push(`/admin-area/${v.link}`);
                   }}
                 >
-                  {v.icon}
+                  {getAntIcon(v.icon)}
                   <span>{v.label}</span>
                 </Menu.Item>
               );
@@ -232,7 +214,7 @@ const AdminLayout = ({children}) => {
                     {
                       title: (
                         <Space>
-                          {objectMenuActive?.icon}
+                          {getAntIcon(objectMenuActive?.icon)}
                           {objectMenuActive?.label}
                         </Space>
                       ),
@@ -243,10 +225,7 @@ const AdminLayout = ({children}) => {
             </Col>
             <Space align="end">
               <Dropdown menu={{ items }}>
-                <Avatar
-                  size={"large"}
-                  src={config.profile}
-                >
+                <Avatar size={"large"} icon={<UserOutlined />}>
                   A
                 </Avatar>
               </Dropdown>
@@ -260,7 +239,10 @@ const AdminLayout = ({children}) => {
             overflow: "initial",
           }}
         >
-          <Spin spinning={loading}>{children}</Spin>
+          <Spin spinning={loading}>
+            {isMobile ? collapsed && children : children}
+            {/* {isMobile && collapsed ? children : children} */}
+          </Spin>
         </Content>
       </Layout>
     </Layout>

@@ -1,49 +1,43 @@
 import React, { useEffect, useState } from "react";
 import { useLogin } from "../../hooks/auth";
-import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import { ErrorResponse } from "../../contants/error";
 import { setCookie } from "cookies-next";
 import router from "next/router";
 import config from "../../config/config";
 import { LOCALSTORAGE } from "../../contants/localstorage";
-import { Form, Input, Row, Button as ButtonAntd, Spin, Col, Modal } from "antd";
+import {
+  Form,
+  Input,
+  Row,
+  Button as ButtonAntd,
+  Spin,
+  Col,
+  Modal,
+  message,
+} from "antd";
 import general from "../../config/general";
+import { useHandleLoadingGlobal } from "../../../redux/general.reducer";
 const Login = () => {
   // const [email, setEmail] = useState("");
   // const [password, setPassword] = useState("");
-  const {
-    fetchUser,
-    user,
-    isLoading,
-    isLoadingForgot,
-    handleForgotPassword,
-    modalForgotPassword,
-    setModalForgotPassword,
-  } = useLogin(); // Initialize userLogin without data
-
-  const handleLogin = async (e) => {
-    fetchUser(form.getFieldsValue(), (err: AxiosError) => {
-      const errorData = err.response.data as ErrorResponse;
-      toast.error(errorData.message);
-      return;
-    });
-  };
+  const { user, setModalForgotPassword, handleLogin } = useLogin();
 
   useEffect(() => {
     if (user !== null) {
-      setCookie("token", user.token, { maxAge: 60 * 6 * 24 * 7 });
-      localStorage.setItem("role", "admin");
-      router.push("/");
+      setCookie("token", user.token_data.token, { maxAge: 60 * 6 * 24 * 7 });
+      router.push("/admin-area/dashboard");
     }
   }, [user]);
 
   const [form] = Form.useForm();
 
+  const loading = useHandleLoadingGlobal();
+
   return (
     <React.Fragment>
       <section className="flex flex-col  bg-gray-100 dark:bg-gray-900 py-40 lg:px-8  lg:py-24">
-        <Spin spinning={isLoading}>
+        <Spin spinning={loading}>
           <div className="flex-col container grid place-items-center align-middle">
             <div className="w-11/12 p-12 sm:w-8/12 md:w-6/12 lg:w-5/12 2xl:w-4/12 px-6 py-10  bg-white rounded-lg shadow-md lg:shadow-lg">
               <div>
