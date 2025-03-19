@@ -115,8 +115,7 @@ const Product = () => {
                           return {
                             image_url: v,
                             is_active: true,
-                            product_image_id:
-                              formData?.payload?.clone_images?.[i]?.product_image_id || "",
+                            product_id_image: formData?.payload?.clone_images?.[i]?.product_image_id || "",
                           };
                         }
                       ) || [],
@@ -126,8 +125,8 @@ const Product = () => {
                     product_name: e?.product_name || "",
                     product_sub_category: e?.product_sub_category || "",
                     slug: formData?.payload?.slug,
-                    status: formData?.payload?.status,
                     tdp: formData?.payload?.tdp || 0,
+                    status: e?.status || formData?.payload?.status,
                   };
                   const res = await putProducts(
                     formData?.payload?.id_product,
@@ -210,6 +209,21 @@ const Product = () => {
                 {/* <Col md={12} xs={24}></Col> */}
               </Row>
 
+              {formData.action === "detail" && (
+                <Form.Item
+                    label="Availability Product"
+                    name="status"
+                    rules={[{ required: true, message: "Pilih status produk!" }]}
+                >
+                  <Select
+                      options={[
+                        { label: "Listed", value: "listed" },
+                        { label: "Booked", value: "booked" },
+                        { label: "Sold", value: "sold" },
+                      ]}
+                  />
+                </Form.Item>
+              )}
               <Form.Item
                 label="Description"
                 name="description"
