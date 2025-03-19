@@ -20,25 +20,39 @@ import {
   CloseOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
+
+import MansoryCard from "../../../../src/components/MansoryCard";
 import general from "../../../../src/config/general";
 import WidgetUpload from "../../../../src/components/WidgetUpload";
 import { useContentContext } from "../../../../src/context/content";
 import { useGeneralContext } from "../../../../src/context/general";
+
+interface BannerProps {
+  id: string;
+  description: string;
+  image: string;
+  is_active: boolean;
+}
+
+interface FormProps {
+  modal: boolean;
+  action: string;
+  banners: BannerProps[];
+}
 
 const Banner = () => {
   const { banner, createBanner, detailBanner, putBanner } = useContentContext();
   const { isMobile } = useGeneralContext();
   const [form] = Form.useForm();
 
-  const [formData, setFormData] = useState({
+  const [loading, setLoading] = useState<boolean>(false);
+  const [formData, setFormData] = useState<FormProps>({
     modal: false,
     action: "",
-    banners: [{ id: '', description: "", image: "", is_active: true }],
+    banners: [{ id: '', description: "", image: "", is_active: true }]
   });
 
-  const [loading, setLoading] = useState(false);
-
-  const close = () => {
+  const clearForm = () => {
     form.resetFields();
     setFormData({ modal: false, action: "", banners: [{ id: '', description: "", image: "", is_active: true }] });
     setLoading(false);
@@ -72,7 +86,7 @@ const Banner = () => {
         message: "Success",
         description: "Banners successfully saved!",
       });
-      close();
+      clearForm();
     } catch (error) {
       notification.error({
         message: "Error",
@@ -93,7 +107,7 @@ const Banner = () => {
           id: response.id_banner,
           description: response.description,
           image: response.image_url,
-          is_active: response.is_active || false,
+          is_active: response.is_active || false
         }]
       });
   
@@ -104,7 +118,7 @@ const Banner = () => {
           id: response.id_banner,
           description: response.description,
           image: response.image_url,
-          is_active: response.is_active, 
+          is_active: response.is_active 
         }]
       });
     } catch {
@@ -117,14 +131,14 @@ const Banner = () => {
   const addBanner = () => {
     setFormData((prev: any) => ({
       ...prev,
-      banners: [...prev.banners, { id: Date.now(), description: "", image: "", is_active: true }],
+      banners: [...prev.banners, { id: "", description: "", image: "", is_active: true }]
     }));
   };
 
   const removeBanner = (id: string) => {
     setFormData((prev) => ({
       ...prev,
-      banners: prev.banners.filter((banner) => banner.id !== id),
+      banners: prev.banners.filter((banner) => banner.id !== id)
     }));
   };
 
@@ -133,7 +147,7 @@ const Banner = () => {
       <Modal
         centered
         footer={null}
-        onCancel={close}
+        onCancel={clearForm}
         open={formData.modal}
         title={formData.action === "detail" ? "Detail & Edit Banner" : "Add Banners"}
       >
@@ -188,7 +202,7 @@ const Banner = () => {
           )}
 
           <Space align="end" className="w-full justify-end mt-5">
-            <Button type="default" onClick={close} icon={<CloseOutlined />} disabled={loading}>
+            <Button type="default" onClick={clearForm} icon={<CloseOutlined />} disabled={loading}>
               Cancel
             </Button>
             <Button type="primary" htmlType="submit" icon={loading ? <LoadingOutlined /> : <SaveOutlined />} loading={loading}>
@@ -202,22 +216,19 @@ const Banner = () => {
         title={<h2 className="text-xl font-bold">Management Banner</h2>}
         extra={!isMobile && (
           <Row justify={"end"}>
-            <Button type="primary" icon={<PlusCircleOutlined />} onClick={() => setFormData({ ...formData, modal: true, action: "add" })}>
+            <Button
+              type="primary"
+              icon={<PlusCircleOutlined />}
+              onClick={() => setFormData({ ...formData, modal: true, action: "add" })}
+            >
               Add Banner
             </Button>
           </Row>
         )}
       >
-        <List
-          dataSource={banner}
-          renderItem={(item: undefined | any) => (
-            <List.Item key={item.id_banner}>
-              <Card hoverable onClick={() => handleDetail(item.id_banner)}>
-                <AntdImage src={item.image_url} alt="Banner" width={150} preview={false} />
-                <p>{item?.description}</p>
-              </Card>
-            </List.Item>
-          )}
+        <MansoryCard
+          data={banner.length > 0 ? banner.map((item: any) => ({ id: item.id_banner, image: item.image_url, title: '', description: item?.description })) : []}
+          callback={(record) => handleDetail(record.id)}
         />
       </Card>
     </>
