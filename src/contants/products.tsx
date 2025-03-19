@@ -1,5 +1,5 @@
 interface ProductImage {
-  product_image_id: string;
+  product_image_id: string | any;
   image_url: string;
 }
 export interface ProductField {
@@ -13,6 +13,7 @@ export interface ProductField {
   province_name?: string;
   city_id?: string;
   city_name?: string;
+  clone_images?: any | string;
   best_product?: boolean;
   id_description?: string;
   description?: string;

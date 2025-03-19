@@ -116,8 +116,7 @@ const Product = () => {
                             image_url: v,
                             is_active: true,
                             product_image_id:
-                              formData?.payload?.clone_images?.[i]
-                                ?.product_image_id || "",
+                              formData?.payload?.clone_images?.[i]?.product_image_id || "",
                           };
                         }
                       ) || [],
@@ -352,7 +351,7 @@ const Product = () => {
                         action: "detail",
                         payload: {
                           ...item,
-                          clone_images: item?.product_images,
+                          clone_images: item?.product_images || [],
                           product_images: item?.product_images?.map(
                             (item: any) => item?.image_url
                           ),
