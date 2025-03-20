@@ -10,7 +10,6 @@ import {
   Space,
   Row,
   Col,
-  Checkbox,
   Switch,
   Spin,
 } from "antd";
@@ -21,6 +20,8 @@ import {
   DeleteOutlined,
   CloseOutlined,
   SaveOutlined,
+  LeftOutlined,
+  RightOutlined,
 } from "@ant-design/icons";
 import general from "../../../src/config/general";
 import WidgetUpload from "../../../src/components/WidgetUpload";
@@ -29,9 +30,12 @@ import CKEditor from "react-ckeditor-component";
 import { useGeneralContext } from "../../../src/context/general";
 import { useProducts } from "../../../src/hooks/products";
 import { initialValue } from "../../../src/contants/products";
-import Dropzone from "react-dropzone/.";
-import axios from "axios";
 import { useRouter } from "next/router";
+import {
+  formatRupiah,
+  rmFormatHTML,
+  rmFormatRupiah,
+} from "../../../utils/general_utils";
 
 const Product = () => {
   const { isMobile } = useGeneralContext();
@@ -60,6 +64,29 @@ const Product = () => {
     formData.action === "detail";
 
   const [loading, setLoading] = useState(false);
+
+  const [currentIndexes, setCurrentIndexes] = useState({});
+
+  const changeImage = (direction, productId, imagesLength) => {
+    setCurrentIndexes((prevIndexes) => {
+      const currentIndex = prevIndexes[productId] || 0; // Default ke 0 jika belum ada
+      let newIndex;
+
+      if (direction === "next") {
+        newIndex = currentIndex === imagesLength - 1 ? 0 : currentIndex + 1;
+      } else {
+        newIndex = currentIndex === 0 ? imagesLength - 1 : currentIndex - 1;
+      }
+
+      return { ...prevIndexes, [productId]: newIndex };
+    });
+  };
+
+  const handleChange = (e) => {
+    const formatted = formatRupiah(e.target.value);
+    form.setFieldsValue({ price: formatted });
+  };
+
   return (
     <React.Fragment>
       <ModalDelete
@@ -70,7 +97,7 @@ const Product = () => {
       {isModalForm && (
         <Modal
           centered
-          width={isMobile ? "100vw" : "60vw"}
+          // width={isMobile ? "100vw" : "60vw"}
           maskClosable={false}
           footer={null}
           onCancel={close}
@@ -93,7 +120,7 @@ const Product = () => {
                         }
                       ) || [],
                     installment: parseFloat(e?.installment || 0),
-                    price: parseFloat(e?.price || 0),
+                    price: parseFloat(rmFormatRupiah(e?.price) || 0),
                     product_name: e.product_name,
                     product_sub_category: e?.product_sub_category,
                     tdp: parseFloat(e?.tdp || 0),
@@ -116,13 +143,14 @@ const Product = () => {
                             image_url: v,
                             is_active: true,
                             product_image_id:
-                              formData?.payload?.clone_images?.[i]?.product_image_id || "",
+                              formData?.payload?.clone_images?.[i]
+                                ?.product_image_id || "",
                           };
                         }
                       ) || [],
                     is_active: e?.is_active || true,
                     installment: parseFloat(e?.installment || 0),
-                    price: parseFloat(e?.price || 0),
+                    price: parseFloat(rmFormatRupiah(e?.price) || 0),
                     product_name: e?.product_name || "",
                     product_sub_category: e?.product_sub_category || "",
                     slug: formData?.payload?.slug,
@@ -138,6 +166,7 @@ const Product = () => {
                   }
                   setLoading(false);
                 }
+                getProducts();
               }}
               form={form}
               layout="vertical"
@@ -173,25 +202,17 @@ const Product = () => {
                   <Form.Item
                     label="Price"
                     name="price"
-                    rules={[general.numberInput]}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter a valid price",
+                      },
+                    ]}
                   >
-                    <Input />
+                    <Input onChange={handleChange} />
                   </Form.Item>
                 </Col>
-                {/* <Col md={6} xs={24}>
-                <Form.Item
-                  label="Installment"
-                  name="installment"
-                  rules={[general.numberInput]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col md={6} xs={24}>
-                <Form.Item label="TDP" name="tdp" rules={[general.numberInput]}>
-                  <Input />
-                </Form.Item>
-              </Col> */}
+
                 <Col md={12} xs={24}>
                   <Form.Item
                     label="Best Product"
@@ -310,15 +331,58 @@ const Product = () => {
             return (
               <div
                 key={index}
-                className="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105"
+                className="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 "
               >
-                {/* Gambar */}
-                <div className="relative">
-                  <img
-                    src={item?.product_images?.[0]?.image_url}
-                    alt={item?.product_name}
-                    className="w-full h-56 object-cover"
-                  />
+                {/* Slider Container */}
+                <div className="relative w-full h-56 overflow-hidden">
+                  <div className="w-full overflow-hidden">
+                    <div
+                      className="flex transition-transform duration-500 ease-in-out"
+                      style={{
+                        transform: `translateX(-${
+                          (currentIndexes[item.id_product] || 0) * 100
+                        }%)`,
+                      }}
+                    >
+                      {item.product_images.map((img, index) => (
+                        <img
+                          key={img.product_image_id}
+                          src={img.image_url}
+                          alt={`Product ${item.product_name}`}
+                          className="w-full h-56 object-cover flex-shrink-0"
+                          style={{ minWidth: "100%" }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tombol Navigasi */}
+                  {item.product_images.length > 1 && (
+                    <>
+                      <LeftOutlined
+                        onClick={() =>
+                          changeImage(
+                            "prev",
+                            item.id_product,
+                            item.product_images.length
+                          )
+                        }
+                        className="absolute top-1/2 left-3 transform -translate-y-1/2 bg-black bg-opacity-100 text-white p-2 rounded-full hover:bg-opacity-75 transition cursor-pointer"
+                      />
+                      <RightOutlined
+                        onClick={() =>
+                          changeImage(
+                            "next",
+                            item.id_product,
+                            item.product_images.length
+                          )
+                        }
+                        className="absolute top-1/2 right-3 transform -translate-y-1/2 bg-black bg-opacity-100 text-white p-2 rounded-full hover:bg-opacity-75 transition cursor-pointer"
+                      />
+                    </>
+                  )}
+
+                  {/* Kategori Produk */}
                   <span className="absolute top-3 left-3 bg-[#FF5733] text-white text-xs font-semibold px-3 py-1 rounded-full">
                     {item?.product_sub_category}
                   </span>
@@ -326,11 +390,25 @@ const Product = () => {
 
                 {/* Konten */}
                 <div className="p-4">
-                  <h3 className="text-lg font-bold text-gray-800">
-                    {item?.product_name}
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-2">
-                    {item.description}
+                  <Row justify={"space-between"}>
+                    <h3 className="text-lg font-bold text-gray-800">
+                      {item?.product_name}
+                    </h3>
+                    <span className="text-red font-bold">
+                      {formatRupiah(item.price.toString())}
+                    </span>
+                  </Row>
+                  <p
+                    className="text-sm text-gray-600 mt-2"
+                    style={{
+                      overflow: "hidden",
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      lineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                    }}
+                  >
+                    {rmFormatHTML(item.description)}
                   </p>
                 </div>
 
@@ -340,11 +418,11 @@ const Product = () => {
                     type="primary"
                     icon={<EditOutlined />}
                     onClick={() => {
-                      // console.log(item);
-                      // return;
-                      Object.assign(item, { image: "image" });
+                      Object.assign(item, {
+                        image: "image",
+                        price: formatRupiah(item.price.toString()),
+                      });
                       form.setFieldsValue(item);
-                      console.log(item);
                       setFormData({
                         ...formData,
                         modal: true,
