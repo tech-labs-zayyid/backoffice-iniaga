@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
-} from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { call } from "../hooks/baseApi";
 
 interface SocialMediaEntry {
@@ -46,9 +40,9 @@ interface ContentContextType {
   setProfile: (data: ProfileForm) => void;
   setSeoDescription: (data: string) => void;
   createSEO: (data: any) => void;
-  createBanner: (data: any) => void;
-  detailBanner: (id: string) => void;
-  putBanner: (id: string, data: BannerForm) => void;
+  createBanner: (data: any) => void
+  detailBanner: (id: string) => void
+  putBanner: (id: string, data: BannerForm) => void
 }
 
 const defaultValues: ContentContextType = {
@@ -70,7 +64,7 @@ const defaultValues: ContentContextType = {
   createSEO: async () => {},
   createBanner: async () => {},
   detailBanner: async () => {},
-  putBanner: async () => {},
+  putBanner: async () => {}
 };
 
 const ContentContext = createContext<ContentContextType>(defaultValues);
@@ -78,7 +72,7 @@ const ContentContext = createContext<ContentContextType>(defaultValues);
 export const ContentProvider = ({ children }: { children: ReactNode }) => {
   const [socialMedia, setSocialMedia] = useState<SocialMediaForm>({});
   const [socialMediaIds, setSocialMediaIds] = useState<SocialMediaIds>({});
-  const [banner, setBanner] = useState<any[]>([]);
+  const [banner, setBanner] = useState<any[]>([])
 
   const [profile, setProfile] = useState<ProfileForm>(defaultValues.profile);
   const [seo_description, setSeoDescription] = useState<string>("");
@@ -196,17 +190,15 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
       method: "GET",
       subUrl: "sales/banner",
     });
-    setBanner(response?.data?.data?.data_list || []);
+    setBanner(response?.data?.data?.data_list || [])
   };
 
   const detailBanner = async (id: string) => {
     const response = await call({
       method: "GET",
-      subUrl: `sales/banner/${id}`,
+      subUrl: `sales/banner/${id}`
     });
-    return response?.data.code === 200
-      ? response?.data?.data
-      : { id: "", image: "" };
+    return response?.data.code === 200 ? response?.data?.data : { id: '', image: '' } ;
   };
 
   const putBanner = async (id: string, payload: BannerForm) => {
@@ -215,7 +207,7 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
       subUrl: `sales/banner/${id}`,
       data: payload,
     });
-    if (response?.status === 200) fetchBanner();
+    if (response?.status === 200) fetchBanner()
 
     return response;
   };
@@ -224,11 +216,11 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
     const response = await call({
       method: "POST",
       subUrl: "sales/banner",
-      data,
+      data
     });
-    if (response?.status === 200) fetchBanner();
+    if (response?.status === 200) fetchBanner()
 
-    return response;
+    return response
   };
 
   const fetchSEO = async () => {
@@ -237,37 +229,26 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
       subUrl: "sales/seo-config",
     });
 
-    return response;
+    return response
   };
 
   const createSEO = async (data: any) => {
     const response = await call({
       method: "POST",
       subUrl: "sales/seo-config",
-      data,
+      data
     });
-    return response;
-  };
-
-  const fetchTestimoni = async () => {
-    const response = await call({
-      method: "GET",
-      subUrl: "testimony/list",
-    });
-
-    return response;
+    return response
   };
 
   useEffect(() => {
-    fetchTestimoni();
     fetchBanner();
     fetchSocialMedia();
-    fetchSEO();
+    fetchSEO()
   }, []);
 
   return (
-    <ContentContext.Provider
-      value={{
+      <ContentContext.Provider value={{
         seo_description,
         profile,
         banner,
@@ -282,11 +263,10 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
         createSEO,
         createBanner,
         detailBanner,
-        putBanner,
-      }}
-    >
-      {children}
-    </ContentContext.Provider>
+        putBanner
+      }}>
+        {children}
+      </ContentContext.Provider>
   );
 };
 
