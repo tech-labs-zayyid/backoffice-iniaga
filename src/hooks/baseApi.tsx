@@ -61,7 +61,7 @@ export async function call({
   data = {},
   isToken = true,
 }: CallOptions) {
-  message.destroy();
+  // message.destroy();
 
   handleLoadingGlobal(true);
   const payload = { ...data };
