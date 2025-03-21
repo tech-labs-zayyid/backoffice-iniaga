@@ -3,7 +3,7 @@ import { call } from "./baseApi";
 import { ProductField, ProductResponse } from "../contants/products";
 
 export const useAgent = () => {
-  const [data, setData] = useState<ProductResponse>(null);
+  const [data, setData] = useState<any>(null);
 
   const getAgen = async (limit: number, page: number) => {
     const response = await call({
