@@ -72,7 +72,6 @@ export async function call({
     headers: {
       "Content-Type": "application/json",
     },
-
     data,
   };
   if (isToken) {
