@@ -67,7 +67,7 @@ const Agent = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    getAgen(pageSize, currentPage); // Fetch agents with dynamic pageSize and currentPage
+    getAgen(pageSize, currentPage);
   }, [currentPage, pageSize]);
 
   // Fetch user data from localStorage to get the ID
