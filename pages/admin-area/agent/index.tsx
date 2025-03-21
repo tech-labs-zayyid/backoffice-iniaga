@@ -15,6 +15,10 @@ import {
   Tooltip,
   Typography,
   Pagination,
+  Switch,
+  Dropdown,
+  Spin,
+  Divider,
 } from "antd";
 
 import {
@@ -30,6 +34,7 @@ import WidgetUpload from "../../../src/components/WidgetUpload";
 import ModalDelete from "../../../src/components/ModalDelete";
 import { useGeneralContext } from "../../../src/context/general";
 import { useAgent } from "../../../src/hooks/agen";
+import ModalConfirmation from "../../../src/components/ModalConfirmation";
 
 const Agent = () => {
   const initialState = {
@@ -52,7 +57,12 @@ const Agent = () => {
   const [pageSize, setPageSize] = useState(10); // Number of items per page
 
   const [idUser, setIdUser] = useState("");
-  const { agents, getAgen, createAgent } = useAgent();
+  const { agents, getAgen, createAgent, updateStatus, deActivated } =
+    useAgent();
+  const [selectedAgentKeys, setSelectedAgentKeys] = useState([]);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPayload, setIsPayload] = useState({});
 
   const [form] = Form.useForm();
 
@@ -82,16 +92,205 @@ const Agent = () => {
   };
 
   const { isMobile } = useGeneralContext();
+  const handleSelectChange = (selectedKeys) => {
+    setSelectedAgentKeys(selectedKeys); // Update selected agent keys
+  };
+
+  const handleConfirmation = () => {
+    setShowConfirmation(true);
+  };
+  console.log(isPayload, "ispayload");
+  const handleSubmit = async (e, action) => {
+    console.log(e, "eeee");
+    if (action === "add") {
+      setIsPayload({
+        email: e.email,
+        image_url: e.image,
+        name: e.name,
+        role: e.role,
+        sales_id: e.sales_id,
+        username: e.username,
+        whatsapp_number: e.whatsapp_number,
+      });
+    }
+    if (action === "delete") {
+      setIsPayload({
+        ...e,
+        id: e.id,
+        is_active: false,
+      });
+    }
+    if (action === "edit") {
+      setIsPayload({
+        ...e,
+        id: formData.payload.id, // Harus ada ID-nya untuk update
+        is_active: true, // ✅ Update agent jadi aktif
+      });
+    }
+
+    setShowConfirmation(true);
+  };
+
+  const handleConfirm = async () => {
+    setShowConfirmation(false);
+    setIsLoading(true);
+
+    try {
+      if (formData.action === "add") {
+        await createAgent(isPayload);
+      }
+
+      window.location.reload(); // **Refresh seluruh halaman**
+    } catch (error) {
+      console.error("Gagal memproses operasi:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleChangeStatus = async () => {
+    console.log("Masuk ke handleChangeStatus");
+    setIsLoading(true);
+
+    try {
+      await updateStatus(isPayload); // Update status agen
+      setShowConfirmation(false);
+      setIsPayload({});
+      window.location.reload(); // **Langsung reload halaman**
+    } catch (error) {
+      console.error("Gagal memperbarui status:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    console.log("Masuk ke handleDelete");
+    setIsLoading(true);
+    const payload = {
+      email: isPayload.email,
+      image_url: isPayload.image,
+      name: isPayload.name,
+      role: isPayload.role,
+      sales_id: isPayload.sales_id,
+      username: isPayload.username,
+      whatsapp_number: isPayload.whatsapp_number,
+      is_active: false,
+    };
+    try {
+      await deActivated(payload, isPayload.id); // Hapus agen
+      setShowConfirmation(false);
+      setIsPayload({});
+
+      window.location.reload(); // **Langsung reload halaman**
+    } catch (error) {
+      console.error("Gagal menghapus agen:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdate = async () => {
+    setIsLoading(true);
+    console.log(isPayload, "ispayload");
+    const payload = {
+      email: isPayload.email,
+      image_url: isPayload.image,
+      name: isPayload.name,
+      role: isPayload.role,
+      sales_id: isPayload.sales_id,
+      username: isPayload.username,
+      whatsapp_number: isPayload.whatsapp_number,
+      is_active: true,
+    };
+    try {
+      await deActivated(payload, isPayload.id); // Hapus agen
+      setShowConfirmation(false);
+      setIsPayload({});
+
+      window.location.reload(); // **Langsung reload halaman**
+    } catch (error) {
+      console.error("Gagal menghapus agen:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const isAgentPending = (status) => status === "PENDING";
+
+  const dataSource = data?.docs?.map((agent) => ({
+    ...agent,
+    key: agent.referal_code, // Ensure each agent has a unique `key` based on their `id`
+  }));
+
   const isModalForm =
     (formData.modal && formData.action === "add") || formData.action === "edit";
-  console.log(form, "ini formdata");
+
   return (
     <React.Fragment>
-      <ModalDelete
-        isModalDelete={formData.modal && formData.action === "delete"}
-        isLoading={false}
-        callback={close}
-      />
+      <Modal
+        zIndex={1001}
+        centered
+        maskClosable={false}
+        open={showConfirmation}
+        onCancel={() => {
+          setShowConfirmation(false);
+          setIsPayload({});
+        }}
+        title={`${
+          formData.action === "add"
+            ? "Create"
+            : formData.action === "delete"
+            ? "Delete"
+            : "Update"
+        } Data`}
+        footer={null}
+      >
+        <Spin spinning={isLoading}>
+          <h1>{`Are you sure you want to ${
+            formData.action === "add"
+              ? "create"
+              : formData.action === "delete"
+              ? "delete"
+              : "update"
+          }
+           this data ?`}</h1>
+          <Divider />
+          <Space align="end" className="w-full justify-end">
+            <Button
+              icon={<CloseOutlined />}
+              type="default"
+              onClick={() => {
+                setShowConfirmation(false);
+                setIsPayload({});
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              icon={<DeleteOutlined />}
+              danger
+              onClick={() => {
+                switch (formData.action) {
+                  case "delete":
+                    handleDelete();
+                    break;
+                  case "change":
+                    handleChangeStatus();
+                    break;
+                  case "edit":
+                    handleUpdate();
+                    break;
+                  default:
+                    handleConfirm();
+                }
+              }}
+            >
+              Submit
+            </Button>
+          </Space>
+        </Spin>
+      </Modal>
       {isModalForm && (
         <Modal
           maskClosable={false}
@@ -109,32 +308,7 @@ const Agent = () => {
             name="basic"
             autoComplete="off"
             onFinish={async (e) => {
-              if (formData.action === "add") {
-                const payload = {
-                  email: e.email,
-                  image_url: e.image,
-                  name: e.name,
-                  role: e.role,
-                  sales_id: e.sales_id,
-                  username: e.username,
-                  whatsapp_number: e.whatsapp_number,
-                };
-                console.log(payload, "payload");
-                await createAgent(payload);
-                // Call create agent logic here
-                close();
-              } else {
-                const payload = {
-                  email: formData.payload.email,
-                  image_url: formData.payload.image_url,
-                  name: formData.payload.name,
-                  role: formData.payload.role,
-                  sales_id: formData.payload.sales_id,
-                  username: formData.payload.username,
-                  whatsapp_number: formData.payload.whatsapp_number,
-                };
-                // Call update agent logic here
-              }
+              handleSubmit(e, formData.action);
             }}
           >
             <Form.Item
@@ -230,7 +404,8 @@ const Agent = () => {
       >
         <Table
           bordered={false}
-          dataSource={data?.docs} // Assuming agents is the correct data
+          dataSource={dataSource} // Assuming agents is the correct data
+          key={"referal_code"}
           scroll={{ x: "max-content" }}
           columns={[
             {
@@ -249,16 +424,8 @@ const Agent = () => {
               key: "referral_code",
             },
             {
-              title: "Join Date",
-              dataIndex: "join_date",
-              key: "join_date",
-              render: (text, record) => (
-                <Typography.Text>{record.start_date.Time}</Typography.Text>
-              ),
-            },
-            {
               title: "Link",
-              dataIndex: "link",
+              dataIndex: "sales_url",
               key: "link",
               render: (text, record) => (
                 <Typography.Text copyable>{text}</Typography.Text>
@@ -266,18 +433,55 @@ const Agent = () => {
             },
             {
               title: "Status",
-              dataIndex: "status",
+              dataIndex: "status_agent",
               key: "status",
-              render: (text) =>
-                text === "Active" ? (
+              render: (text, rec) =>
+                text === "APPROVED" ? (
                   <Tag color="green">{text}</Tag>
                 ) : (
-                  <Tag color="red">{text}</Tag>
+                  // <Tag color="green">{text}</Tag>
+                  <Space wrap>
+                    <Select
+                      size="large"
+                      onChange={
+                        (e) => {
+                          console.log(e, "value");
+                          handleConfirmation();
+                          setFormData({
+                            ...formData,
+                            modal: true,
+                            action: "change",
+                          });
+                          setIsPayload({
+                            agent_id: rec.id as string,
+                            status: e,
+                          });
+                        }
+                        // handleChangeStatus(rec.id as string, e.value)
+                      }
+                      options={[
+                        {
+                          label: "PENDING",
+                          value: "PENDING",
+                          disabled: true,
+                        },
+                        {
+                          label: "APPROVED",
+                          value: "APPROVED",
+                        },
+                        {
+                          label: "REJECTED",
+                          value: "REJECTED",
+                        },
+                      ]}
+                      value={text}
+                    />
+                  </Space>
                 ),
             },
             {
               fixed: !isMobile ? "right" : null,
-              title: "#",
+              title: "Actions",
               dataIndex: "image",
               key: "image",
               render: (text, record) => (
@@ -291,6 +495,8 @@ const Agent = () => {
                         status: record.status,
                         image: record.image_url,
                         whatsapp_number: record.whatsapp_number,
+                        is_active: record.is_active,
+                        id: record.id,
                       });
                       setFormData({
                         ...formData,
@@ -314,6 +520,8 @@ const Agent = () => {
                         action: "delete",
                         payload: record,
                       });
+                      handleSubmit(record, "delete");
+                      setShowConfirmation(true);
                     }}
                   >
                     Delete
@@ -332,6 +540,10 @@ const Agent = () => {
             },
             showSizeChanger: true, // Allow user to change the page size
             showQuickJumper: true, // Allow user to jump to a specific page
+          }}
+          rowSelection={{
+            selectedRowKeys: selectedAgentKeys, // Sync selected checkboxes
+            onChange: handleSelectChange, // Handle selection changes
           }}
         />
       </Card>

@@ -22,6 +22,26 @@ export const useAgent = () => {
     return response;
     console.log(response);
   };
+
+  const updateStatus = async (payload: any) => {
+    const response = await call({
+      method: "POST",
+      subUrl: "agent/action-status",
+      data: payload,
+    });
+    return response;
+    console.log(response);
+  };
+
+  const deActivated = async (payload: any, id: string) => {
+    const response = await call({
+      method: "PUT",
+      subUrl: `agent/update/${id}`,
+      data: payload,
+    });
+    return response;
+    console.log(response);
+  };
   // const putAgent = async (id: string, payload: ProductField) => {
   //   const response = await call({
   //     method: "PUT",
@@ -35,6 +55,8 @@ export const useAgent = () => {
     agents: data,
     getAgen,
     createAgent,
+    updateStatus,
+    deActivated,
     // putProducts,
     // getProducts,
     // createProducts,
