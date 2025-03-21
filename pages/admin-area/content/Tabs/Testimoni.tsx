@@ -9,6 +9,8 @@ import {
   Row,
   Avatar,
   FloatButton,
+  Spin,
+  Switch,
 } from "antd";
 
 import {
@@ -23,13 +25,13 @@ import ModalDelete from "../../../../src/components/ModalDelete";
 import general from "../../../../src/config/general";
 import WidgetUpload from "../../../../src/components/WidgetUpload";
 import { useGeneralContext } from "../../../../src/context/general";
+import { useContentContext } from "../../../../src/context/content";
 
 const Testimoni = () => {
   const initialState = {
     name: "",
-    title: "",
     description: "",
-    image: "",
+    photo_url: "",
   };
   const [formData, setFormData] = useState({
     modal: false,
@@ -59,10 +61,15 @@ const Testimoni = () => {
     form.resetFields();
     setFormData({ payload: initialState, modal: false, action: "" });
   };
-  const {isMobile}=useGeneralContext()
+  const { isMobile } = useGeneralContext();
+  const { testimoni, storeTestimoni, fetchTestimoni, loading } =
+    useContentContext();
+
+  const [id, setId] = useState("");
   return (
     <React.Fragment>
       <ModalDelete
+        isLoading={loading}
         isModalDelete={formData.modal && formData.action === "delete"}
         isLoading={false}
         callback={close}
@@ -77,53 +84,68 @@ const Testimoni = () => {
         }
         title={`Form ${formData.action === "edit" ? "Edit" : "Add"} Testimoni`}
       >
-        <Form
-          onFinish={(e) => {}}
-          form={form}
-          layout="vertical"
-          name="basic"
-          autoComplete="off"
-        >
-          <Form.Item label="Name" name="name" rules={[general.generalInput]}>
-            <Input />
-          </Form.Item>
-          <Form.Item label="Title" name="title" rules={[general.generalInput]}>
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Description"
-            name="description"
-            rules={[general.generalInput]}
+        <Spin spinning={loading}>
+          <Form
+            onFinish={async (e) => {
+              const res = await storeTestimoni({
+                fullname: e.name,
+                description: e.description,
+                photo_url: e.photo_url,
+              });
+              fetchTestimoni();
+              close();
+              console.log(res);
+            }}
+            form={form}
+            layout="vertical"
+            name="basic"
+            autoComplete="off"
           >
-            <Input.TextArea />
-          </Form.Item>
-          <Form.Item label="Image" name="image" rules={[general.generalInput]}>
-            <WidgetUpload
-              onSuccess={(response) => {
-                form.setFieldValue("image", response.info.url);
-                setFormData({
-                  ...formData,
-                  payload: { ...formData.payload, image: response.info.url },
-                });
-              }}
-              link={formData?.payload?.image}
-            />
-          </Form.Item>
-          <Space align="end" className="w-full justify-end">
-            <Button
-              type="default"
-              htmlType="button"
-              onClick={close}
-              icon={<CloseOutlined />}
+            <Form.Item label="Name" name="name" rules={[general.generalInput]}>
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[general.generalInput]}
             >
-              Cancel
-            </Button>
+              <Input.TextArea />
+            </Form.Item>
+            <Form.Item
+              label="Photo"
+              name="photo_url"
+              rules={[general.generalInput]}
+            >
+              <WidgetUpload
+                onSuccess={(response) => {
+                  form.setFieldValue("photo_url", response.info.url);
+                  setFormData({
+                    ...formData,
+                    payload: {
+                      ...formData.payload,
+                      photo_url: response.info.url,
+                    },
+                  });
+                }}
+                link={formData?.payload?.photo_url}
+              />
+            </Form.Item>
+            <Space align="end" className="w-full justify-end">
+              <Button
+                type="default"
+                htmlType="button"
+                onClick={close}
+                icon={<CloseOutlined />}
+              >
+                Cancel
+              </Button>
 
-            <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
-              Save
-            </Button>
-          </Space>
-        </Form>
+              <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
+                Save
+              </Button>
+            </Space>
+          </Form>
+        </Spin>
       </Modal>
       {!isMobile && (
         <React.Fragment>
@@ -142,17 +164,18 @@ const Testimoni = () => {
         </React.Fragment>
       )}
       <Table
-        dataSource={datas}
+        // loading={loading}
+        dataSource={testimoni}
         scroll={{ x: "max-content" }}
         columns={[
           {
             title: "Name",
-            dataIndex: "name",
-            key: "name",
+            dataIndex: "fullname",
+            key: "fullname",
             render: (text, record) => {
               return (
                 <Space>
-                  <Avatar src={record.image}>
+                  <Avatar src={record.photo_url}>
                     <UserOutlined />
                   </Avatar>
                   {text}
@@ -160,15 +183,37 @@ const Testimoni = () => {
               );
             },
           },
-          {
-            title: "Title",
-            dataIndex: "title",
-            key: "title",
-          },
+
           {
             title: "Description",
             dataIndex: "description",
             key: "description",
+          },
+          {
+            title: "Status",
+            dataIndex: "is_active",
+            key: "is_active",
+            render: (text, record) => {
+              return (
+                <Switch
+                  loading={record.id === id && loading}
+                  checkedChildren="Active"
+                  unCheckedChildren="Inactive"
+                  defaultChecked={text}
+                  onChange={async (checked) => {
+                    setId(record.id);
+                    await storeTestimoni({
+                      fullname: record.fullname,
+                      description: record.description,
+                      photo_url: record.photo_url,
+                      is_active: checked,
+                      id: record.id,
+                    });
+                    fetchTestimoni();
+                  }}
+                />
+              );
+            },
           },
           {
             fixed: isMobile ? null : "right",

@@ -45,6 +45,10 @@ const handleInstance = async (request) => {
   try {
     const response = await request;
     handleLoadingGlobal(false);
+    if (response.config.method !== "get") {
+      message.success(response.data.message);
+      console.log(response.data.message);
+    }
     return response;
   } catch (err) {
     handleLoadingGlobal(false);
@@ -57,6 +61,8 @@ export async function call({
   data = {},
   isToken = true,
 }: CallOptions) {
+  message.destroy();
+
   handleLoadingGlobal(true);
   const payload = { ...data };
   const configAxios: AxiosRequestConfig = {

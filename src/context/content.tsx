@@ -26,6 +26,14 @@ interface BannerForm {
   image_url: string;
   is_active: boolean;
 }
+interface TestimoniForm {
+  created_at?: string;
+  description: string;
+  fullname: string;
+  id?: string;
+  is_active?: boolean;
+  photo_url: string;
+}
 
 interface ProfileForm {
   title: string;
@@ -34,8 +42,10 @@ interface ProfileForm {
 }
 
 interface ContentContextType {
+  loading: boolean;
   profile: ProfileForm;
   seo_description: string;
+  testimoni: TestimoniForm[];
   banner: undefined[];
   socialMedia: SocialMediaForm;
   socialMediaIds: SocialMediaIds;
@@ -49,15 +59,19 @@ interface ContentContextType {
   createBanner: (data: any) => void;
   detailBanner: (id: string) => void;
   putBanner: (id: string, data: BannerForm) => void;
+  storeTestimoni: (data: TestimoniForm) => void;
+  fetchTestimoni: () => Promise<void>;
 }
 
 const defaultValues: ContentContextType = {
+  loading: false,
   profile: {
     title: "",
     image: "",
     description: "",
   },
   seo_description: "",
+  testimoni: [],
   banner: [],
   socialMedia: {},
   socialMediaIds: {},
@@ -71,6 +85,8 @@ const defaultValues: ContentContextType = {
   createBanner: async () => {},
   detailBanner: async () => {},
   putBanner: async () => {},
+  storeTestimoni: async () => {},
+  fetchTestimoni: async () => {},
 };
 
 const ContentContext = createContext<ContentContextType>(defaultValues);
@@ -79,6 +95,8 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
   const [socialMedia, setSocialMedia] = useState<SocialMediaForm>({});
   const [socialMediaIds, setSocialMediaIds] = useState<SocialMediaIds>({});
   const [banner, setBanner] = useState<any[]>([]);
+  const [testimoni, setTestimoni] = useState<TestimoniForm[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [profile, setProfile] = useState<ProfileForm>(defaultValues.profile);
   const [seo_description, setSeoDescription] = useState<string>("");
@@ -250,11 +268,23 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const fetchTestimoni = async () => {
+    setLoading(true);
     const response = await call({
       method: "GET",
-      subUrl: "testimony/list",
+      subUrl: "sales/testimony",
+    });
+    setTestimoni(response?.data?.data);
+    setLoading(false);
+  };
+  const storeTestimoni = async (payload: TestimoniForm) => {
+    setLoading(true);
+    const response = await call({
+      method: payload.id ? "PUT" : "POST",
+      subUrl: "sales/testimony",
+      data: payload,
     });
 
+    setLoading(false);
     return response;
   };
 
@@ -268,6 +298,10 @@ export const ContentProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ContentContext.Provider
       value={{
+        loading,
+        testimoni,
+        fetchTestimoni,
+        storeTestimoni,
         seo_description,
         profile,
         banner,
