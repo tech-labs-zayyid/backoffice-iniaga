@@ -63,7 +63,7 @@ const Agent = () => {
   const [selectedAgentKeys, setSelectedAgentKeys] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isPayload, setIsPayload] = useState({});
+  const [isPayload, setIsPayload] = useState<any>({});
 
   const [form] = Form.useForm();
 
@@ -169,17 +169,17 @@ const Agent = () => {
     console.log("Masuk ke handleDelete");
     setIsLoading(true);
     const payload = {
-      email: isPayload.email,
-      image_url: isPayload.image,
-      name: isPayload.name,
-      role: isPayload.role,
-      sales_id: isPayload.sales_id,
-      username: isPayload.username,
-      whatsapp_number: isPayload.whatsapp_number,
+      email: isPayload?.email,
+      image_url: isPayload?.image,
+      name: isPayload?.name,
+      role: isPayload?.role,
+      sales_id: isPayload?.sales_id,
+      username: isPayload?.username,
+      whatsapp_number: isPayload?.whatsapp_number,
       is_active: false,
     };
     try {
-      await deActivated(payload, isPayload.id); // Hapus agen
+      await deActivated(payload, isPayload?.id); // Hapus agen
       setShowConfirmation(false);
       setIsPayload({});
 
@@ -195,17 +195,17 @@ const Agent = () => {
     setIsLoading(true);
     console.log(isPayload, "ispayload");
     const payload = {
-      email: isPayload.email,
-      image_url: isPayload.image,
-      name: isPayload.name,
-      role: isPayload.role,
-      sales_id: isPayload.sales_id,
-      username: isPayload.username,
-      whatsapp_number: isPayload.whatsapp_number,
+      email: isPayload?.email,
+      image_url: isPayload?.image,
+      name: isPayload?.name,
+      role: isPayload?.role,
+      sales_id: isPayload?.sales_id,
+      username: isPayload?.username,
+      whatsapp_number: isPayload?.whatsapp_number,
       is_active: true,
     };
     try {
-      await deActivated(payload, isPayload.id); // Hapus agen
+      await deActivated(payload, isPayload?.id); // Hapus agen
       setShowConfirmation(false);
       setIsPayload({});
 
