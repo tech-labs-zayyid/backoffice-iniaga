@@ -38,6 +38,7 @@ import ModalConfirmation from "../../../src/components/ModalConfirmation";
 
 const Agent = () => {
   const initialState = {
+    id: "",
     email: "",
     image_url: "",
     name: "",
@@ -123,7 +124,7 @@ const Agent = () => {
     if (action === "edit") {
       setIsPayload({
         ...e,
-        id: formData.payload.id, // Harus ada ID-nya untuk update
+        id: e.id, // Harus ada ID-nya untuk update
         is_active: true, // ✅ Update agent jadi aktif
       });
     }
