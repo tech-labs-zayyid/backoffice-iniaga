@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Input, Space, Button, Row, Col, notification } from "antd";
 import { SaveOutlined } from "@ant-design/icons";
 import { getCookie } from "cookies-next";
-import { decodeToken } from "../../../../utils/general_utils";
+// import { decodeToken } from "../../../../utils/general_utils";
 import general from "../../../../src/config/general";
 import { useContentContext } from "../../../../src/context/content";
 import { useGeneralContext } from "../../../../src/context/general";
@@ -27,10 +27,10 @@ const Seo = () => {
 
     try {
       const token = getCookie("token");
-      const payload = { ...values, public_access: "", product_id: decodeToken(token)?.product_id };
+      // decodeToken(token)?.product_id
+      const payload = { ...values, public_access: "", product_id: "" };
 
       const response = await createSEO(payload);
-      console.log('response: ', response)
       notification.success({
         message: "Success",
         description: "SEO description updated successfully!"

@@ -10,8 +10,8 @@ import {
   Space,
   Row,
   Col,
-  Checkbox,
   Switch,
+  Spin,
 } from "antd";
 
 import {
@@ -20,6 +20,8 @@ import {
   DeleteOutlined,
   CloseOutlined,
   SaveOutlined,
+  LeftOutlined,
+  RightOutlined,
 } from "@ant-design/icons";
 import general from "../../../src/config/general";
 import WidgetUpload from "../../../src/components/WidgetUpload";
@@ -28,9 +30,12 @@ import CKEditor from "react-ckeditor-component";
 import { useGeneralContext } from "../../../src/context/general";
 import { useProducts } from "../../../src/hooks/products";
 import { initialValue } from "../../../src/contants/products";
-import Dropzone from "react-dropzone/.";
-import axios from "axios";
 import { useRouter } from "next/router";
+import {
+  formatRupiah,
+  rmFormatHTML,
+  rmFormatRupiah,
+} from "../../../utils/general_utils";
 
 const Product = () => {
   const { isMobile } = useGeneralContext();
@@ -58,6 +63,30 @@ const Product = () => {
     (formData.modal && formData.action === "add") ||
     formData.action === "detail";
 
+  const [loading, setLoading] = useState(false);
+
+  const [currentIndexes, setCurrentIndexes] = useState({});
+
+  const changeImage = (direction, productId, imagesLength) => {
+    setCurrentIndexes((prevIndexes) => {
+      const currentIndex = prevIndexes[productId] || 0; // Default ke 0 jika belum ada
+      let newIndex;
+
+      if (direction === "next") {
+        newIndex = currentIndex === imagesLength - 1 ? 0 : currentIndex + 1;
+      } else {
+        newIndex = currentIndex === 0 ? imagesLength - 1 : currentIndex - 1;
+      }
+
+      return { ...prevIndexes, [productId]: newIndex };
+    });
+  };
+
+  const handleChange = (e) => {
+    const formatted = formatRupiah(e.target.value);
+    form.setFieldsValue({ price: formatted });
+  };
+
   return (
     <React.Fragment>
       <ModalDelete
@@ -68,197 +97,234 @@ const Product = () => {
       {isModalForm && (
         <Modal
           centered
-          width={isMobile ? "100vw" : "60vw"}
+          // width={isMobile ? "100vw" : "60vw"}
           maskClosable={false}
           footer={null}
           onCancel={close}
           open={isModalForm}
           title={`Form ${formData.action === "edit" ? "Edit" : "Add"} Product`}
         >
-          <Form
-            onFinish={async (e) => {
-              if (formData.action === "add") {
-                const payload = {
-                  best_product: e?.best_product || false,
-                  city_id: "",
-                  description: e?.description || "",
-                  images:
-                    JSON.parse(localStorage.getItem(tempFileName))?.map((v) => {
-                      return { image_url: v };
-                    }) || [],
-                  installment: parseFloat(e?.installment || 0),
-                  price: parseFloat(e?.price || 0),
-                  product_name: e.product_name,
-                  product_sub_category: e?.product_sub_category,
-                  tdp: parseFloat(e?.tdp || 0),
-                };
-                await createProducts(payload);
-                close();
-              } else {
-                const payload = {
-                  best_product: e?.best_product || false,
-                  city_id: "",
-                  description: e?.description || "",
-                  id_description: formData?.payload?.id_description,
-                  images:
-                    JSON.parse(localStorage.getItem(tempFileName))?.map((v) => {
-                      return { image_url: v, is_active: true };
-                    }) || [],
-                  is_active: e?.is_active || true,
-                  installment: parseFloat(e?.installment || 0),
-                  price: parseFloat(e?.price || 0),
-                  product_name: e?.product_name || "",
-                  product_sub_category: e?.product_sub_category || "",
-                  slug: formData?.payload?.slug,
-                  status: formData?.payload?.status,
-                  tdp: formData?.payload?.tdp || 0,
-                };
-                await putProducts(formData?.payload?.id_product, payload);
-              }
-            }}
-            form={form}
-            layout="vertical"
-            name="basic"
-            autoComplete="off"
-          >
-            <Row gutter={[10, 10]}>
-              <Col md={12} xs={24}>
-                <Form.Item
-                  style={{ width: "100%" }}
-                  label="Name"
-                  name="product_name"
-                  rules={[general.generalInput]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col md={12} xs={24}>
-                <Form.Item
-                  label="Category"
-                  name="product_sub_category"
-                  rules={[general.generalInput]}
-                >
-                  <Select
-                    options={[
-                      { label: "Transportation", value: "transportation" },
-                      { label: "Electronics", value: "electronics" },
-                    ]}
-                  />
-                </Form.Item>
-              </Col>
-              <Col md={12} xs={24}>
-                <Form.Item
-                  label="Price"
-                  name="price"
-                  rules={[general.numberInput]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-              {/* <Col md={6} xs={24}>
-                <Form.Item
-                  label="Installment"
-                  name="installment"
-                  rules={[general.numberInput]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col md={6} xs={24}>
-                <Form.Item label="TDP" name="tdp" rules={[general.numberInput]}>
-                  <Input />
-                </Form.Item>
-              </Col> */}
-              <Col md={12} xs={24}>
-                <Form.Item
-                  label="Best Product"
-                  name="best_product"
-                  rules={[general.generalInput]}
-                >
-                  <Select
-                    options={[
-                      { label: "Active", value: true },
-                      { label: "Non Active ", value: false },
-                    ]}
-                  />
-                </Form.Item>
-              </Col>
+          <Spin spinning={loading}>
+            <Form
+              onFinish={async (e) => {
+                setLoading(true);
+                if (formData.action === "add") {
+                  const payload = {
+                    best_product: e?.best_product || false,
+                    city_id: "",
+                    description: e?.description || "",
+                    images:
+                      JSON.parse(localStorage.getItem(tempFileName))?.map(
+                        (v) => {
+                          return { image_url: v };
+                        }
+                      ) || [],
+                    installment: parseFloat(e?.installment || 0),
+                    price: parseFloat(rmFormatRupiah(e?.price) || 0),
+                    product_name: e.product_name,
+                    product_sub_category: e?.product_sub_category,
+                    tdp: parseFloat(e?.tdp || 0),
+                  };
+                  const res = await createProducts(payload);
+                  if (res) {
+                    close();
+                  }
+                  setLoading(false);
+                } else {
+                  const payload = {
+                    best_product: e?.best_product || false,
+                    city_id: "",
+                    description: e?.description || "",
+                    id_description: formData?.payload?.id_description,
+                    images:
+                      JSON.parse(localStorage.getItem(tempFileName))?.map(
+                        (v, i) => {
+                          return {
+                            image_url: v,
+                            is_active: true,
 
-              {/* <Col md={12} xs={24}></Col> */}
-            </Row>
+                            product_image_id:
+                              formData?.payload?.clone_images?.[i]
+                                ?.product_image_id || "",
 
-            <Form.Item
-              label="Description"
-              name="description"
-              rules={[general.generalInput]}
+                          };
+                        }
+                      ) || [],
+                    is_active: e?.is_active || true,
+                    installment: parseFloat(e?.installment || 0),
+                    price: parseFloat(rmFormatRupiah(e?.price) || 0),
+                    product_name: e?.product_name || "",
+                    product_sub_category: e?.product_sub_category || "",
+                    slug: formData?.payload?.slug,
+                    tdp: formData?.payload?.tdp || 0,
+                    status: e?.status || formData?.payload?.status,
+                  };
+                  const res = await putProducts(
+                    formData?.payload?.id_product,
+                    payload
+                  );
+                  if (res) {
+                    close();
+                  }
+                  setLoading(false);
+                }
+                getProducts();
+              }}
+              form={form}
+              layout="vertical"
+              name="basic"
+              autoComplete="off"
             >
-              <CKEditor
-                activeClass="p10"
-                content={formData?.payload?.description}
-                events={{
-                  blur: (e) => {},
-                  afterPaste: (e) => {},
-                  change: (e) => {
-                    const data = e.editor.getData();
+              <Row gutter={[10, 10]}>
+                <Col md={12} xs={24}>
+                  <Form.Item
+                    style={{ width: "100%" }}
+                    label="Name"
+                    name="product_name"
+                    rules={[general.generalInput]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col md={12} xs={24}>
+                  <Form.Item
+                    label="Category"
+                    name="product_sub_category"
+                    rules={[general.generalInput]}
+                  >
+                    <Select
+                      options={[
+                        { label: "Transportation", value: "transportation" },
+                        { label: "Electronics", value: "electronics" },
+                      ]}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col md={12} xs={24}>
+                  <Form.Item
+                    label="Price"
+                    name="price"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter a valid price",
+                      },
+                    ]}
+                  >
+                    <Input onChange={handleChange} />
+                  </Form.Item>
+                </Col>
+
+                <Col md={12} xs={24}>
+                  <Form.Item
+                    label="Best Product"
+                    name="best_product"
+                    rules={[general.generalInput]}
+                  >
+                    <Select
+                      options={[
+                        { label: "Active", value: true },
+                        { label: "Non Active ", value: false },
+                      ]}
+                    />
+                  </Form.Item>
+                </Col>
+
+                {/* <Col md={12} xs={24}></Col> */}
+              </Row>
+
+              {formData.action === "detail" && (
+                <Form.Item
+                    label="Availability Product"
+                    name="status"
+                    rules={[{ required: true, message: "Pilih status produk!" }]}
+                >
+                  <Select
+                      options={[
+                        { label: "Listed", value: "listed" },
+                        { label: "Booked", value: "booked" },
+                        { label: "Sold", value: "sold" },
+                      ]}
+                  />
+                </Form.Item>
+              )}
+              <Form.Item
+                label="Description"
+                name="description"
+                rules={[general.generalInput]}
+              >
+                <CKEditor
+                  activeClass="p10"
+                  content={formData?.payload?.description}
+                  events={{
+                    blur: (e) => {},
+                    afterPaste: (e) => {},
+                    change: (e) => {
+                      const data = e.editor.getData();
+                      setFormData({
+                        ...formData,
+                        payload: { ...formData.payload, description: data },
+                      });
+                      form.setFieldValue("description", data);
+                    },
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="Image"
+                name="image"
+                rules={[general.generalInput]}
+              >
+                <WidgetUpload
+                  files={formData?.payload?.product_images}
+                  maxFiles={1}
+                  onSuccess={(response) => {
+                    const urlImage = response.info.url;
+                    form.setFieldValue("image", urlImage);
                     setFormData({
                       ...formData,
-                      payload: { ...formData.payload, description: data },
+                      payload: {
+                        ...formData.payload,
+                        product_images: [
+                          ...formData.payload.product_images,
+                          urlImage,
+                        ],
+                      },
                     });
-                    form.setFieldValue("description", data);
-                  },
-                }}
-              />
-            </Form.Item>
+                  }}
+                />
+              </Form.Item>
 
-            <Form.Item
-              label="Image"
-              name="image"
-              rules={[general.generalInput]}
-            >
-              <WidgetUpload
-                files={formData?.payload?.product_images}
-                maxFiles={1}
-                onSuccess={(response) => {
-                  const urlImage = response.info.url;
-                  form.setFieldValue("image", urlImage);
-                  setFormData({
-                    ...formData,
-                    payload: {
-                      ...formData.payload,
-                      product_images: [
-                        ...formData.payload.product_images,
-                        urlImage,
-                      ],
-                    },
-                  });
-                }}
-              />
-            </Form.Item>
+              <Form.Item label="Status" name={"is_active"}>
+                <Switch
+                  disabled={formData?.action === "add"}
+                  defaultChecked={formData?.payload?.is_active || true}
+                  checkedChildren="Active"
+                  unCheckedChildren="Inactive"
+                />
+              </Form.Item>
 
-            <Form.Item label="Status" name={"is_active"}>
-              <Switch
-                disabled={formData?.action === "add"}
-                defaultChecked={formData?.payload?.is_active || true}
-                checkedChildren="Active"
-                unCheckedChildren="Inactive"
-              />
-            </Form.Item>
+              <Space align="end" className="w-full justify-end mt-5">
+                <Button
+                  type="default"
+                  htmlType="button"
+                  onClick={close}
+                  icon={<CloseOutlined />}
+                >
+                  Cancel
+                </Button>
 
-            <Space align="end" className="w-full justify-end mt-5">
-              <Button
-                type="default"
-                htmlType="button"
-                onClick={close}
-                icon={<CloseOutlined />}
-              >
-                Cancel
-              </Button>
-
-              <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
-                Save
-              </Button>
-            </Space>
-          </Form>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  icon={<SaveOutlined />}
+                >
+                  Save
+                </Button>
+              </Space>
+            </Form>
+          </Spin>
         </Modal>
       )}
       <Card
@@ -282,15 +348,58 @@ const Product = () => {
             return (
               <div
                 key={index}
-                className="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105"
+                className="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 "
               >
-                {/* Gambar */}
-                <div className="relative">
-                  <img
-                    src={item?.product_images?.[0]?.image_url}
-                    alt={item?.product_name}
-                    className="w-full h-56 object-cover"
-                  />
+                {/* Slider Container */}
+                <div className="relative w-full h-56 overflow-hidden">
+                  <div className="w-full overflow-hidden">
+                    <div
+                      className="flex transition-transform duration-500 ease-in-out"
+                      style={{
+                        transform: `translateX(-${
+                          (currentIndexes[item.id_product] || 0) * 100
+                        }%)`,
+                      }}
+                    >
+                      {item.product_images.map((img, index) => (
+                        <img
+                          key={img.product_image_id}
+                          src={img.image_url}
+                          alt={`Product ${item.product_name}`}
+                          className="w-full h-56 object-cover flex-shrink-0"
+                          style={{ minWidth: "100%" }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tombol Navigasi */}
+                  {item.product_images.length > 1 && (
+                    <>
+                      <LeftOutlined
+                        onClick={() =>
+                          changeImage(
+                            "prev",
+                            item.id_product,
+                            item.product_images.length
+                          )
+                        }
+                        className="absolute top-1/2 left-3 transform -translate-y-1/2 bg-black bg-opacity-100 text-white p-2 rounded-full hover:bg-opacity-75 transition cursor-pointer"
+                      />
+                      <RightOutlined
+                        onClick={() =>
+                          changeImage(
+                            "next",
+                            item.id_product,
+                            item.product_images.length
+                          )
+                        }
+                        className="absolute top-1/2 right-3 transform -translate-y-1/2 bg-black bg-opacity-100 text-white p-2 rounded-full hover:bg-opacity-75 transition cursor-pointer"
+                      />
+                    </>
+                  )}
+
+                  {/* Kategori Produk */}
                   <span className="absolute top-3 left-3 bg-[#FF5733] text-white text-xs font-semibold px-3 py-1 rounded-full">
                     {item?.product_sub_category}
                   </span>
@@ -298,11 +407,25 @@ const Product = () => {
 
                 {/* Konten */}
                 <div className="p-4">
-                  <h3 className="text-lg font-bold text-gray-800">
-                    {item?.product_name}
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-2">
-                    {item.description}
+                  <Row justify={"space-between"}>
+                    <h3 className="text-lg font-bold text-gray-800">
+                      {item?.product_name}
+                    </h3>
+                    <span className="text-red font-bold">
+                      {formatRupiah(item.price.toString())}
+                    </span>
+                  </Row>
+                  <p
+                    className="text-sm text-gray-600 mt-2"
+                    style={{
+                      overflow: "hidden",
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      lineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                    }}
+                  >
+                    {rmFormatHTML(item.description)}
                   </p>
                 </div>
 
@@ -312,8 +435,10 @@ const Product = () => {
                     type="primary"
                     icon={<EditOutlined />}
                     onClick={() => {
-                      // console.log(item);
-                      // return;
+                      Object.assign(item, {
+                        image: "image",
+                        price: formatRupiah(item.price.toString()),
+                      });
                       form.setFieldsValue(item);
                       setFormData({
                         ...formData,
@@ -321,6 +446,7 @@ const Product = () => {
                         action: "detail",
                         payload: {
                           ...item,
+                          clone_images: item?.product_images || [],
                           product_images: item?.product_images?.map(
                             (item: any) => item?.image_url
                           ),
