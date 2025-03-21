@@ -1,3 +1,4 @@
+// @ts-ignore
 import React, { useEffect, useState } from "react";
 import { CldUploadWidget } from "next-cloudinary";
 import {
