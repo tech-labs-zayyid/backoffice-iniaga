@@ -40,7 +40,14 @@ export const useLogin = () => {
     return datas;
   };
 
-  const handleForgotPassword = async (data) => {};
+  const handleForgotPassword = async (data) => {
+    console.log(data);
+    setIsLoadingForgot(true);
+    setTimeout(
+      () => setIsLoadingForgot(false), 
+      1000
+    );
+  };
 
   const getUser = () => {
     setUser(JSON.parse(localStorage.getItem(LOCALSTORAGE.USERDATA)));
