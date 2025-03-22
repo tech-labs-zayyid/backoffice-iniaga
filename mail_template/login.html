@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Tailwind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 flex items-center justify-center min-h-screen">
+
+    <div class="max-w-4xl w-full flex shadow-lg rounded-lg overflow-hidden bg-gray-800 text-white">
+        <!-- Left Side (Image & Text) -->
+        <div class="w-1/2 hidden md:block relative">
+            <img src="https://source.unsplash.com/600x600/?landscape" alt="Background" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center text-center p-6">
+                <h2 class="text-xl font-semibold">Capturing Moments,</h2>
+                <h2 class="text-xl font-semibold">Creating Memories</h2>
+            </div>
+        </div>
+
+        <!-- Right Side (Form) -->
+        <div class="w-full md:w-1/2 p-8">
+            <button class="absolute top-6 right-6 text-gray-400 hover:text-white">Back to website →</button>
+
+            <h2 class="text-2xl font-bold text-center mb-6">Create an account</h2>
+            <p class="text-center text-gray-400 text-sm mb-4">Already have an account? <a href="#" class="text-purple-400">Log in</a></p>
+
+            <form>
+                <div class="flex gap-4">
+                    <input type="text" placeholder="First name" class="w-1/2 p-3 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <input type="text" placeholder="Last name" class="w-1/2 p-3 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+
+                <input type="email" placeholder="Email" class="w-full mt-4 p-3 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                
+                <div class="relative mt-4">
+                    <input type="password" placeholder="Enter your password" class="w-full p-3 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <span class="absolute right-4 top-4 text-gray-400 cursor-pointer">👁</span>
+                </div>
+
+                <div class="mt-4 flex items-center">
+                    <input type="checkbox" id="terms" class="mr-2">
+                    <label for="terms" class="text-gray-400 text-sm">I agree to the <a href="#" class="text-purple-400">Terms & Conditions</a></label>
+                </div>
+
+                <button class="w-full bg-purple-600 hover:bg-purple-500 p-3 rounded-md text-white font-semibold mt-6">Create account</button>
+            </form>
+
+            <div class="mt-6 text-center text-gray-400 text-sm">Or register with</div>
+
+            <div class="flex mt-4 gap-4">
+                <button class="w-1/2 p-3 flex items-center justify-center bg-gray-700 hover:bg-gray-600 rounded-md">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" class="w-5 h-5 mr-2"> Google
+                </button>
+                <button class="w-1/2 p-3 flex items-center justify-center bg-gray-700 hover:bg-gray-600 rounded-md">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" class="w-5 h-5 mr-2"> Apple
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

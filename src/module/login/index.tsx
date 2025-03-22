@@ -1,27 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useLogin } from "../../hooks/auth";
-import { AxiosError } from "axios";
-import { ErrorResponse } from "../../contants/error";
 import { setCookie } from "cookies-next";
 import router from "next/router";
-import config from "../../config/config";
-import { LOCALSTORAGE } from "../../contants/localstorage";
 import {
   Form,
   Input,
-  Row,
   Button as ButtonAntd,
   Spin,
-  Col,
   Modal,
-  message,
 } from "antd";
-import general from "../../config/general";
 import { useHandleLoadingGlobal } from "../../../redux/general.reducer";
+import Image from "next/image";
+import Link from "next/link";
+import general from "../../config/general";
+
 const Login = () => {
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
-  const { user, setModalForgotPassword, handleLogin, modalForgotPassword, handleForgotPassword, isLoadingForgot } = useLogin();
+  const { 
+    user, 
+    setModalForgotPassword, 
+    handleLogin, 
+    modalForgotPassword, 
+    handleForgotPassword, 
+    isLoadingForgot 
+  } = useLogin();
 
   useEffect(() => {
     if (user !== null) {
@@ -31,121 +32,119 @@ const Login = () => {
   }, [user]);
 
   const [form] = Form.useForm();
-
   const loading = useHandleLoadingGlobal();
 
   return (
-    <React.Fragment>
-      <section className="flex flex-col  bg-gray-100 dark:bg-gray-900 py-40 lg:px-8  lg:py-24">
-        <Spin spinning={loading}>
-          <div className="flex-col container grid place-items-center align-middle">
-            <div className="w-11/12 p-12 sm:w-8/12 md:w-6/12 lg:w-5/12 2xl:w-4/12 px-6 py-10  bg-white rounded-lg shadow-md lg:shadow-lg">
-              <div>
-                <h1 className=" text-center mt-2 text-2xl font-semibold text-gray-800 md:text-3xl dark:text-white">
-                  Form Masuk
-                </h1>
-                <p className=" text-center mt-3 text-gray-500 dark:text-gray-400">
-                  Silahkan lengkapi form dibawah ini.
-                </p>
-              </div>
-              <Form
-                form={form}
-                layout="vertical"
-                className="mt-10 mb-7"
-                onFinish={handleLogin}
-              >
-                <Form.Item
-                  name={"email"}
-                  label="E-MAIL"
-                  required
-                  hasFeedback
-                  rules={[general.generalInput, general.emailInput as any]}
-                >
-                  <Input placeholder="masukkan alamat e-mail anda" />
-                </Form.Item>
-                <Form.Item
-                  name={"password"}
-                  label="PASSWORD"
-                  required
-                  hasFeedback
-                  rules={[general.generalInput]}
-                >
-                  <Input.Password placeholder="masukkan password anda" />
-                </Form.Item>
-                <div className="space-y-6">
-                  <div className="flex items-start">
-                    <div className="flex items-start">
-                      <a
-                        href="javascript:void(0)"
-                        className="text-sm text-hijau hover:underline ml-auto"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setModalForgotPassword(true);
-                          // router.push("/register");
-                        }}
-                      >
-                        Lupa Password?
-                      </a>
-                    </div>
-                  </div>
-                  <ButtonAntd block className="hijau-button" htmlType="submit">
-                    MASUK
-                  </ButtonAntd>
-                  <div
-                    className="text-sm text-center font-medium text-gray-500 dark:text-gray-300"
-                    style={{
-                      border: "1px solid #EEE",
-                      padding: 5,
-                      borderRadius: "5px",
-                    }}
-                  >
-                    Belum punya akun?{" "}
-                    <a
-                      href="javascript:void(0)"
-                      className="text-hijau hover:underline"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        router.push("/register");
-                      }}
-                    >
-                      Buat akun
-                    </a>
-                  </div>
-                </div>
-              </Form>
-            </div>
+    <div className="flex flex-col items-center w-full justify-center min-h-screen bg-gray-900">
+      <div className="max-w-4xl w-full flex shadow-lg rounded-lg overflow-hidden bg-gray-800 text-white">
+        <div className="w-1/2 hidden md:block relative">
+          <Image 
+            src="https://images.unsplash.com/photo-1591696205602-2f950c417cb9?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+            alt="Background" 
+            layout="fill" 
+            objectFit="cover"
+            unoptimized 
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center text-center p-6">
+            <h2 className="text-xl font-semibold">Selamat Datang Kembali,</h2>
+            <h2 className="text-xl font-semibold">Penjualan Optimal, Teknologi Masa Kini dengan Iniaga</h2>
           </div>
-        </Spin>
-      </section>
+        </div>
+
+        {/* Right Side (Login Form) */}
+        <div className="w-full md:w-1/2 p-8 relative">
+          <div className="flex justify-center">
+            <img src="https://iniaga.id/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fcrop_logo.79742657.png&w=828&q=75" alt="logo" className="w-[220px]" />
+          </div>
+          <h2 className="text-2xl font-bold text-center mb-6">Sign in to your account</h2>
+
+          <Form
+            form={form}
+            layout="vertical"
+            className="mt-10 mb-7"
+            onFinish={handleLogin}
+          >
+            <Form.Item
+              name="email"
+              label={<span className="text-gray-300">E-MAIL</span>}
+              required
+              hasFeedback
+              rules={[general.generalInput, general.emailInput as any]}
+            >
+              <Input 
+                placeholder="Masukkan email Anda" 
+                className="w-full p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </Form.Item>
+            
+            <Form.Item
+              name="password"
+              label={<span className="text-gray-300">PASSWORD</span>}
+              required
+              hasFeedback
+              rules={[general.generalInput]}
+            >
+              <Input.Password 
+                placeholder="Masukkan password Anda" 
+                className="w-full p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </Form.Item>
+
+            <div className="flex justify-between items-center text-sm text-gray-400">
+              <label className="flex items-center">
+                <input type="checkbox" className="mr-2" />
+                Ingat saya
+              </label>
+              <a
+                href="javascript:void(0)"
+                className="text-purple-400 hover:underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setModalForgotPassword(true);
+                }}
+              >
+                Lupa Password?
+              </a>
+            </div>
+
+            <ButtonAntd 
+              block 
+              className="bg-purple-600 hover:bg-purple-500 text-white font-semibold p-3 rounded-md mt-6" 
+              htmlType="submit"
+            >
+              MASUK
+            </ButtonAntd>
+          </Form>
+        </div>
+      </div>
+
+      {/* Modal Lupa Password */}
       <Modal
         title="Lupa Password"
         open={modalForgotPassword}
         onCancel={() => setModalForgotPassword(false)}
         footer={null}
       >
-        <Form
-          layout="vertical"
-          onFinish={handleForgotPassword}
-        >
+        <Form layout="vertical" onFinish={handleForgotPassword}>
           <Form.Item
             name="email"
             label="E-MAIL"
             required
-            rules={[{ required: true, message: "Harap masukkan email Anda!" }, general.emailInput as any]}
+            rules={[{ required: true, message: "Harap masukkan email Anda!" }]}
           >
-            <Input placeholder="Masukkan alamat e-mail anda" />
+            <Input placeholder="Masukkan email Anda" />
           </Form.Item>
-          <ButtonAntd
-            block
-            className="hijau-button"
-            htmlType="submit"
+          <ButtonAntd 
+            block 
+            className="bg-purple-600 hover:bg-purple-500 text-white font-semibold p-3 rounded-md" 
+            htmlType="submit" 
             loading={isLoadingForgot}
           >
             Kirim Permintaan Reset
           </ButtonAntd>
         </Form>
       </Modal>
-    </React.Fragment>
+    </div>
   );
 };
 
