@@ -49,7 +49,7 @@ const Agent = () => {
     whatsapp_number: "",
   };
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<any>({
     modal: false,
     action: "add",
     payload: initialState,
@@ -195,7 +195,7 @@ const Agent = () => {
   const handleUpdate = async () => {
     setIsLoading(true);
     console.log(isPayload, "ispayload");
-    const payload = {
+    const payload:any = {
       email: isPayload?.email,
       image_url: isPayload?.image,
       name: isPayload?.name,
@@ -359,7 +359,7 @@ const Agent = () => {
               rules={[general.generalInput]}
             >
               <WidgetUpload
-                onSuccess={(response) => {
+                onSuccess={(response: any) => {
                   form.setFieldValue("image", response.info.url);
                   setFormData({
                     ...formData,
@@ -414,7 +414,7 @@ const Agent = () => {
               title: "Name",
               dataIndex: "name",
               key: "name",
-              render: (text, record) => (
+              render: (text, record: any) => (
                 <Space>
                   <Avatar src={record.image_url} /> {text}
                 </Space>
