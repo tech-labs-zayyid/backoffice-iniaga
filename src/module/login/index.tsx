@@ -21,7 +21,7 @@ import { useHandleLoadingGlobal } from "../../../redux/general.reducer";
 const Login = () => {
   // const [email, setEmail] = useState("");
   // const [password, setPassword] = useState("");
-  const { user, setModalForgotPassword, handleLogin } = useLogin();
+  const { user, setModalForgotPassword, handleLogin, modalForgotPassword, handleForgotPassword, isLoadingForgot } = useLogin();
 
   useEffect(() => {
     if (user !== null) {
@@ -117,6 +117,34 @@ const Login = () => {
           </div>
         </Spin>
       </section>
+      <Modal
+        title="Lupa Password"
+        open={modalForgotPassword}
+        onCancel={() => setModalForgotPassword(false)}
+        footer={null}
+      >
+        <Form
+          layout="vertical"
+          onFinish={handleForgotPassword}
+        >
+          <Form.Item
+            name="email"
+            label="E-MAIL"
+            required
+            rules={[{ required: true, message: "Harap masukkan email Anda!" }, general.emailInput as any]}
+          >
+            <Input placeholder="Masukkan alamat e-mail anda" />
+          </Form.Item>
+          <ButtonAntd
+            block
+            className="hijau-button"
+            htmlType="submit"
+            loading={isLoadingForgot}
+          >
+            Kirim Permintaan Reset
+          </ButtonAntd>
+        </Form>
+      </Modal>
     </React.Fragment>
   );
 };
